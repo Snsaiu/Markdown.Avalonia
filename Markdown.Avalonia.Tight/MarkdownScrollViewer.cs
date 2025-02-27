@@ -17,6 +17,7 @@ using Markdown.Avalonia.StyleCollections;
 using Markdown.Avalonia.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -409,8 +410,8 @@ namespace Markdown.Avalonia
                 else
                 {
                     // like PHP's flexible_heredoc_nowdoc_syntaxes,
-                    // The indentation of the closing tag dictates 
-                    // the amount of whitespace to strip from each line 
+                    // The indentation of the closing tag dictates
+                    // the amount of whitespace to strip from each line
                     var lines = Regex.Split(value, "\r\n|\r|\n", RegexOptions.Multiline);
 
                     // count last line indent
@@ -645,10 +646,18 @@ namespace Markdown.Avalonia
                 {
                     if (_document is not null)
                     {
-                        VisualChildren.Remove(_document.Control);
-                        LogicalChildren.Remove(_document.Control);
-                        _document.Helper = null;
-                        Clear();
+                        try
+                        {
+                            VisualChildren.Remove(_document.Control);
+                            LogicalChildren.Remove(_document.Control);
+                            _document.Helper = null;
+                            Clear();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e.Message);
+                        }
+
                     }
 
                     _document = value;

@@ -1,10 +1,12 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using ColorTextBlock.Avalonia.Geometries;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace ColorTextBlock.Avalonia
 {
@@ -193,29 +195,38 @@ namespace ColorTextBlock.Avalonia
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
-            base.OnPropertyChanged(change);
-
-            switch (change.Property.Name)
+            try
             {
-                case nameof(Background):
-                case nameof(Foreground):
-                case nameof(IsUnderline):
-                case nameof(IsStrikethrough):
-                    RequestRender();
-                    break;
+                base.OnPropertyChanged(change);
 
-                case nameof(FontFamily):
-                case nameof(FontSize):
-                case nameof(FontStyle):
-                case nameof(FontWeight):
-                case nameof(FontStretch):
-                    Typeface = new Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
-                    goto case nameof(TextVerticalAlignment);
+                switch (change.Property.Name)
+                {
+                    case nameof(Background):
+                    case nameof(Foreground):
+                    case nameof(IsUnderline):
+                    case nameof(IsStrikethrough):
+                        RequestRender();
+                        break;
 
-                case nameof(TextVerticalAlignment):
-                    RequestMeasure();
-                    break;
+                    case nameof(FontFamily):
+                    case nameof(FontSize):
+                    case nameof(FontStyle):
+                    case nameof(FontWeight):
+                    case nameof(FontStretch):
+                        Typeface = new(FontFamily, FontStyle, FontWeight, FontStretch);
+                        goto case nameof(TextVerticalAlignment);
+
+                    case nameof(TextVerticalAlignment):
+                        RequestMeasure();
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+
+            }
+
         }
 
         protected void RequestMeasure()
