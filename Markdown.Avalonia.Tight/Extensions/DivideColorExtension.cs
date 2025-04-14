@@ -43,7 +43,7 @@ namespace Markdown.Avalonia.Extensions
             {
                 return new Binding
                 {
-                    Source = color
+                    Source = new SolidColorBrush( color)
                 };
             }
 
