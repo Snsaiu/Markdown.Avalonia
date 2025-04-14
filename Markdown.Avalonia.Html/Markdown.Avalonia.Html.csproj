@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>Markdown.Avalonia.Html</PackageId>
+    <PackageId>Markdown.Avalonia.Html.YouYan</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
     <Description>html tag processor for Markdown.Avalonia</Description>

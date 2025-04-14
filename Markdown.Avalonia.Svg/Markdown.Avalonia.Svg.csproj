@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>Markdown.Avalonia.Svg</PackageId>
+    <PackageId>Markdown.Avalonia.Svg.YouYan</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
     <Copyright>Nanjing Youyan</Copyright>

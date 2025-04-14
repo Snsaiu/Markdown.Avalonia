@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>Markdown.Avalonia.SyntaxHigh</PackageId>
+    <PackageId>Markdown.Avalonia.SyntaxHigh.YouYan</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
     <Copyright>Nanjing Youyan</Copyright>

@@ -4,7 +4,7 @@
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
-    <PackageId>ColorDocument.Avalonia</PackageId>
+    <PackageId>ColorDocument.Avalonia.YouYan</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
     <Copyright>Nanjing Youyan</Copyright>

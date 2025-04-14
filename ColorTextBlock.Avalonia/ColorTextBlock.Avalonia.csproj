@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>ColorTextBlock.Avalonia</PackageId>
+    <PackageId>ColorTextBlock.Avalonia.YouYan</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>YouYan</Authors>
     <Copyright>Nanjing Youyan</Copyright>
