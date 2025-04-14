@@ -1,35 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\Markdown.Avalonia.props" />
-
+  <Import Project="..\Markdown.Avalonia.props"/>
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
     <PackageId>Markdown.Avalonia.SyntaxHigh</PackageId>
     <Version>$(PackageVersion)</Version>
-    <Authors>whistyun</Authors>
-    <Copyright>Copyright (c) 2021 whistyun</Copyright>
-    <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia</PackageProjectUrl>
+    <Authors>YouYan</Authors>
+    <Copyright>Nanjing Youyan</Copyright>
+    <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
     <PackageReadmeFile>Markdown.Avalonia.SyntaxHigh.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Company />
+    <Company/>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Include="..\pack_readme\Markdown.Avalonia.SyntaxHigh.md" Pack="true" PackagePath="\" />
+    <None Include="..\pack_readme\Markdown.Avalonia.SyntaxHigh.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="$(AvaloniaEditVersion)" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="$(AvaloniaEditVersion)"/>
   </ItemGroup>
-  
   <ItemGroup>
-    <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All"/>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="StyleCollections\AppendixOfDefaultTheme.axaml.cs">
       <DependentUpon>AppendixOfDefaultTheme.axaml</DependentUpon>
@@ -41,5 +35,4 @@
       <DependentUpon>AppendixOfFluentTheme.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
-
 </Project>

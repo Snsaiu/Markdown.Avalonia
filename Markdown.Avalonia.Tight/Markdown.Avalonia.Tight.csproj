@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="..\Markdown.Avalonia.props" />
-
+  <Import Project="..\Markdown.Avalonia.props"/>
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
@@ -9,11 +7,11 @@
     <AssemblyName>Markdown.Avalonia</AssemblyName>
     <RootNamespace>Markdown.Avalonia</RootNamespace>
     <Version>$(PackageVersion)</Version>
-    <Authors>Bevan Arps(original); whistyun</Authors>
-    <Company />
+    <Authors>YouYan</Authors>
+    <Company/>
     <Description>Markdown Controls for Avalonia</Description>
-    <Copyright>Copyright (c) 2010 Bevan Arps, 2020 whistyun</Copyright>
-    <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia</PackageProjectUrl>
+    <Copyright>Nanjing Youyan</Copyright>
+    <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>Markdown.Avalonia.Tight.md</PackageReadmeFile>
     <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
@@ -21,38 +19,29 @@
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Include="..\pack_readme\Markdown.Avalonia.Tight.md" Pack="true" PackagePath="\" />
+    <None Include="..\pack_readme\Markdown.Avalonia.Tight.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
   </ItemGroup>
-
   <ItemGroup>
-    <None Remove="Assets\ImageNotFound.bmp" />
-    <None Remove="EmojiTable.txt" />
+    <None Remove="Assets\ImageNotFound.bmp"/>
+    <None Remove="EmojiTable.txt"/>
   </ItemGroup>
-
   <ItemGroup>
-    <AvaloniaResource Include="Assets\ImageNotFound.bmp" />
+    <AvaloniaResource Include="Assets\ImageNotFound.bmp"/>
   </ItemGroup>
-
   <ItemGroup>
-    <EmbeddedResource Include="EmojiTable.txt" />
+    <EmbeddedResource Include="EmojiTable.txt"/>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\ColorDocument.Avalonia\ColorDocument.Avalonia.csproj" />
-    <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj" />
+    <ProjectReference Include="..\ColorDocument.Avalonia\ColorDocument.Avalonia.csproj"/>
+    <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj"/>
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
-  
-  <!-- see https://stackoverflow.com/questions/41979310/including-referenced-project-dlls-in-nuget-package-net-core-rc3-csproj-file
+  <ItemGroup Condition=" &apos;$(TargetFramework)&apos; == &apos;net45&apos; ">
+    <Reference Include="System.Net.Http"/>
+  </ItemGroup><!-- see https://stackoverflow.com/questions/41979310/including-referenced-project-dlls-in-nuget-package-net-core-rc3-csproj-file
   <PropertyGroup>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>
@@ -60,7 +49,5 @@
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>
-  </Target>
-   -->
-
+  </Target> -->
 </Project>

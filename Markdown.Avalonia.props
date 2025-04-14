@@ -1,15 +1,12 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+  <PropertyGroup Condition=" &apos;$(OS)&apos; == &apos;Windows_NT&apos; ">
     <PackageTargetFrameworks>net461;netstandard2.0;net6</PackageTargetFrameworks>
     <DemoAppTargetFrameworks>net461;netcoreapp3.1;net6;net7</DemoAppTargetFrameworks>
     <TestTargetFrameworks>net6</TestTargetFrameworks>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(IS_WHISTYUN_PC)' == 'Y' ">
+  <PropertyGroup Condition=" &apos;$(IS_WHISTYUN_PC)&apos; == &apos;Y&apos; ">
     <TestTargetFrameworks>netcoreapp3.1;net5;net6;net7</TestTargetFrameworks>
   </PropertyGroup>
-
   <PropertyGroup>
     <AvaloniaVersion>11.2.6</AvaloniaVersion>
     <DemoAvaloniaVersion>11.2.6</DemoAvaloniaVersion>
@@ -17,16 +14,13 @@
     <AvaloniaEditVersion>11.0.0</AvaloniaEditVersion>
     <AvaloniaSvgVersion>11.0.0</AvaloniaSvgVersion>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(AVA_VER)' != '' ">
+  <PropertyGroup Condition=" &apos;$(AVA_VER)&apos; != &apos;&apos; ">
     <TestAvaloniaVersion>$(AVA_VER)</TestAvaloniaVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(AVA_VER)' == '' ">
+  <PropertyGroup Condition=" &apos;$(AVA_VER)&apos; == &apos;&apos; ">
     <TestAvaloniaVersion>$(AvaloniaVersion)</TestAvaloniaVersion>
   </PropertyGroup>
-
   <PropertyGroup>
-    <PackageVersion>11.0.3-a1</PackageVersion>
+    <PackageVersion>11.2-a1</PackageVersion>
   </PropertyGroup>
-
 </Project>
