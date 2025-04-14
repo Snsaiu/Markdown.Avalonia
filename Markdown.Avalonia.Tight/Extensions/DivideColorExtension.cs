@@ -20,128 +20,42 @@ namespace Markdown.Avalonia.Extensions
 
         public DivideColorExtension(string frm, string to, double relate)
         {
-            this._frmKey = frm;
-            this._toKey = to;
-            this._relate = relate;
+            _frmKey = frm;
+            _toKey = to;
+            _relate = relate;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            IBinding left;
-            if (Color.TryParse(_frmKey, out var leftColor))
-            {
-                left = new StaticBinding(leftColor);
-            }
-            else
-            {
-                var lftExt = new DynamicResourceExtension(_frmKey);
-                left = lftExt.ProvideValue(serviceProvider);
-            }
+            var left = CreateBinding(_frmKey);
+            var right = CreateBinding(_toKey);
 
-            IBinding right;
-            if (Color.TryParse(_toKey, out var rightColor))
+            return new MultiBinding
             {
-                right = new StaticBinding(rightColor);
-            }
-            else
-            {
-                var rgtExt = new DynamicResourceExtension(_toKey);
-                right = rgtExt.ProvideValue(serviceProvider);
-            }
-
-            return new MultiBinding()
-            {
-                Bindings = new IBinding[] { left, right },
+                Bindings = new[] { left, right },
                 Converter = new DivideConverter(_relate)
+            };
+        }
+
+        private Binding CreateBinding(string keyOrColor)
+        {
+            if (Color.TryParse(keyOrColor, out var color))
+            {
+                return new Binding
+                {
+                    Source = color
+                };
+            }
+
+            // 绑定到当前控件的资源字典中的颜色
+            return new Binding
+            {
+                Path = $"[{keyOrColor}]", // 等价于 Resources["key"]
+                RelativeSource = new RelativeSource(RelativeSourceMode.Self)
             };
         }
     }
 
-    class StaticBinding : IBinding
-    {
-        private readonly object _value;
-
-        public StaticBinding(object value)
-        {
-            _value = value;
-        }
-
-        public InstancedBinding? Initiate(AvaloniaObject target, AvaloniaProperty? targetProperty, object? anchor = null, bool enableDataValidation = false)
-        {
-            return InstancedBinding.OneWay(new StaticBindingObservable(_value));
-        }
-
-        class StaticBindingObservable : IObservable<object>
-        {
-            object Value { get; set; }
-
-            public StaticBindingObservable(object value)
-            {
-                Value = value;
-            }
-
-            private readonly ConcurrentDictionary<StaticTicket, IObserver<object>> _cache = new();
-
-            public IDisposable Subscribe(IObserver<object> observer)
-            {
-                //StaticTicket ticket;
-                //do
-                //{
-                //    ticket = new StaticTicket(this);
-                //} while (Cache.ContainsKey(ticket));
-                //
-                //Cache[ticket] = observer;
-                //
-                //return ticket;
-
-                observer.OnNext(Value);
-
-                return new DummyDisposable();
-            }
-
-            public void Remove(StaticTicket nemui)
-            {
-                _cache.TryRemove(nemui, out var _);
-            }
-        }
-
-        class DummyDisposable : IDisposable
-        {
-            public void Dispose() { }
-        }
-
-        class StaticTicket : IDisposable
-        {
-            private readonly StaticBindingObservable _owner;
-            private readonly Guid _guid = new();
-
-            public StaticTicket(StaticBindingObservable owner)
-            {
-                this._owner = owner;
-            }
-
-
-            ~StaticTicket() => Dispose();
-
-            public override int GetHashCode()
-                => _guid.GetHashCode();
-
-            public override bool Equals(object? obj)
-            {
-                if (obj is StaticTicket nemu)
-                    return nemu._guid.Equals(nemu._guid);
-
-                return false;
-            }
-
-            public void Dispose()
-            {
-                _owner.Remove(this);
-                GC.SuppressFinalize(this);
-            }
-        }
-
-    }
 
     class DivideConverter : IMultiValueConverter
     {
