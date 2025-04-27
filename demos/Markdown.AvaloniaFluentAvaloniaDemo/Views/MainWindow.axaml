@@ -13,7 +13,7 @@
         x:Class="Markdown.AvaloniaFluentAvaloniaDemo.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Markdown.AvaloniaFluentAvaloniaDemo"
-       
+
         >
 
   <Design.DataContext>
@@ -126,12 +126,12 @@
         <md:MarkdownScrollViewer
           x:Name="MarkdownViewer"
           SaveScrollValueWhenContentUpdated="True"
-          
-          Markdown="{Binding Text}"
 
+          Markdown="{Binding Text}"
+          SelectionEnabled="True"
           AssetPathRoot="{Binding AssetPathRoot}"
           Source="{Binding Source}"
-      
+
           local:DynamicStyleBehavior.XamlText="{Binding AppendStyleXamlText}"
           local:DynamicStyleBehavior.ValidationResult="{Binding XamlParseResult}">
         </md:MarkdownScrollViewer>

@@ -12,7 +12,7 @@
 
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
         x:Class="Markdown.AvaloniaDemo.Views.MainWindow"
-        
+
         x:DataType="vm:MainWindowViewModel"
         x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
@@ -121,16 +121,17 @@
       Content=" "
       BorderThickness="0,0,0,1"
       />
-    
+
     <md:MarkdownScrollViewer
       Grid.Row="1"
       Grid.Column="1"
+
       VerticalAlignment="Stretch"
       MarkdownStyleName="{Binding SelectedStyle.Name}"
       SaveScrollValueWhenContentUpdated="True"
       Markdown="{Binding Text}"
       HeaderScrolled="HeaderScrolled"
-      
+
       local:DynamicStyleBehavior.XamlText="{Binding AppendStyleXamlText}"
       local:DynamicStyleBehavior.ValidationResult="{Binding XamlParseResult}"
       >
