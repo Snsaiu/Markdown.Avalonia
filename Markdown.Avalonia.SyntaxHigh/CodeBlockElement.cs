@@ -7,6 +7,7 @@ using Avalonia;
 using Markdown.Avalonia.SyntaxHigh.Extensions;
 using ColorDocument.Avalonia;
 using System.Text;
+using Avalonia.Interactivity;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
@@ -56,6 +57,8 @@ namespace Markdown.Avalonia.SyntaxHigh
             txtEdit.Text = code;
             txtEdit.HorizontalAlignment = HorizontalAlignment.Stretch;
             txtEdit.IsReadOnly = true;
+            txtEdit.AddHandler(TextEditor.RequestBringIntoViewEvent, handler: (_,e)=> { e.Handled = true; });
+
 
             copyButton.Click += (s, e) =>
             {
@@ -75,5 +78,6 @@ namespace Markdown.Avalonia.SyntaxHigh
 
             return result;
         }
+
     }
 }
