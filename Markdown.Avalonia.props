@@ -21,6 +21,6 @@
     <TestAvaloniaVersion>$(AvaloniaVersion)</TestAvaloniaVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>11.2-a2</PackageVersion>
+    <PackageVersion>11.2-a3</PackageVersion>
   </PropertyGroup>
 </Project>

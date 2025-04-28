@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="demos/Markdown.AvaloniaDemo/App.axaml" value="demos/Markdown.AvaloniaDemo/Markdown.AvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaDemo/Assets/AppendingStyles.axaml" value="demos/Markdown.AvaloniaDemo/Markdown.AvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaDemo/Views/MainWindow.axaml" value="demos/Markdown.AvaloniaDemo/Markdown.AvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/App.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/Assets/AppendingStyles.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/Views/MainWindow.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
