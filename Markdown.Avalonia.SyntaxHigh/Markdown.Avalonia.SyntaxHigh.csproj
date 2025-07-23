@@ -13,6 +13,8 @@
     <Company/>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
+    <PackageVersion>11.2-a4</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\pack_readme\Markdown.Avalonia.SyntaxHigh.md" Pack="true" PackagePath="\"/>

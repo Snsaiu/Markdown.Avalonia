@@ -18,6 +18,8 @@
     <PackageReadmeFile>Markdown.Avalonia.md</PackageReadmeFile>
     <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
     <Title>markdown</Title>
+    <PackageVersion>11.2-a4</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\pack_readme\Markdown.Avalonia.md" Pack="true" PackagePath="\"/>

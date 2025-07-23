@@ -14,6 +14,8 @@
     <Company/>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
+    <PackageVersion>11.2-a4</PackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Core\Parsers\TypicalBlockParser.tsv"/>
