@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
+    <PackageReference Include="CSharpMath.SkiaSharp" Version="0.5.1" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\ImageNotFound.bmp"/>

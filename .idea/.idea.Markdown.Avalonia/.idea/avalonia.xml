@@ -9,6 +9,7 @@
         <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/App.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
         <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/Assets/AppendingStyles.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
         <entry key="demos/Markdown.AvaloniaFluentAvaloniaDemo/Views/MainWindow.axaml" value="demos/Markdown.AvaloniaFluentAvaloniaDemo/Markdown.AvaloniaFluentAvaloniaDemo.csproj" />
+        <entry key="demos/Markdown.AvaloniaFluentDemo/Views/MainWindow.axaml" value="demos/Markdown.AvaloniaFluentDemo/Markdown.AvaloniaFluentDemo.csproj" />
       </map>
     </option>
   </component>

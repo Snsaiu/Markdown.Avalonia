@@ -22,6 +22,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using CSharpMath.SkiaSharp;
+
 
 namespace Markdown.Avalonia
 {
@@ -240,8 +242,9 @@ namespace Markdown.Avalonia
 
 
             // inline parser
-            inlines.Add(InlineParser.New(_codeSpan, nameof(CodeSpanEvaluator), CodeSpanEvaluator));
-            inlines.Add(InlineParser.New(_imageOrHrefInline, nameof(ImageOrHrefInlineEvaluator), ImageOrHrefInlineEvaluator));
+            // inlines.Add(InlineParser.New(_codeSpan, nameof(CodeSpanEvaluator), CodeSpanEvaluator));
+            // inlines.Add(InlineParser.New(_imageOrHrefInline, nameof(ImageOrHrefInlineEvaluator), ImageOrHrefInlineEvaluator));
+            inlines.Add(InlineParser.New(_mathExpressionInLine, nameof(ImageOrHrefInlineEvaluator), ImageOrHrefInlineEvaluator));
 
             if (StrictBoldItalic)
             {
@@ -459,6 +462,7 @@ namespace Markdown.Avalonia
                         var match = parser.Pattern.Match(text, index, length);
                         if (!match.Success) break;
 
+                        
                         var rslt = parser.Convert(text, match, this, out int parseBegin, out int parserEnd);
                         if (rslt is null) break;
 
@@ -565,6 +569,10 @@ namespace Markdown.Avalonia
                 )", GetNestedBracketsPattern(), GetNestedParensPattern()),
                   RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
+        private static readonly Regex _mathExpressionInLine =
+            new(@"(?<!\\)(\${1,2})(.+?)\1",
+                RegexOptions.Singleline );
+
 
         private CInline ImageOrHrefInlineEvaluator(Match match)
         {
@@ -609,11 +617,27 @@ namespace Markdown.Avalonia
 
         private CInline TreatsAsImage(Match match)
         {
+            if (!string.IsNullOrEmpty(match.Groups[0].Value) && match.Groups[0].Value.StartsWith("$"))
+            {
+               return LoadMathExpressionImage(match.Groups[2].Value);
+            }
+            else
+            {
             string altText = match.Groups[3].Value;
             string urlTxt = match.Groups[4].Value;
             string title = match.Groups[7].Value;
-
             return LoadImage(urlTxt, title);
+            }
+        }
+
+        private CInline LoadMathExpressionImage(string text)
+        {
+            var patiner = new MathPainter() { LaTeX = text };
+            var memory = patiner.DrawAsStream();
+            var bitmap = new Bitmap(memory);
+            var image = new CImage(bitmap);
+            return image;
+
         }
 
         private CInline LoadImage(string urlTxt, string title)
