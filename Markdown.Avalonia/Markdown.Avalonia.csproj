@@ -1,35 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Markdown.Avalonia.props"/>
-  <PropertyGroup>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <Version>$(PackageVersion)</Version>
-    <Authors>YouYan</Authors>
-    <PackageId>Markdown.Avalonia.YouYan</PackageId>
-    <AssemblyName>Markdown.Avalonia.Full</AssemblyName>
-    <RootNamespace>Markdown.Avalonia.Full</RootNamespace>
-    <Company>Nanjing YouYan</Company>
-    <Description>Markdown Controls for Avalonia</Description>
-    <Copyright>Nanjing Youyan</Copyright>
-    <PackageProjectUrl>
-      <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
-    </PackageProjectUrl>
-    <LangVersion>9</LangVersion>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>Markdown.Avalonia.md</PackageReadmeFile>
-    <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
-    <Title>markdown</Title>
-    <PackageVersion>11.2-a4</PackageVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\pack_readme\Markdown.Avalonia.md" Pack="true" PackagePath="\"/>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Markdown.Avalonia.Html\Markdown.Avalonia.Html.csproj"/>
-    <ProjectReference Include="..\Markdown.Avalonia.Svg\Markdown.Avalonia.Svg.csproj"/>
-    <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj"/>
-  </ItemGroup>
-  <ItemGroup Condition="&apos;$(EnableAvaloniaEdit)&apos; == &apos;enabled&apos;">
-    <ProjectReference Include="..\Markdown.Avalonia.SyntaxHigh\Markdown.Avalonia.SyntaxHigh.csproj"/>
-  </ItemGroup>
+    <Import Project="..\Markdown.Avalonia.props"/>
+    <PropertyGroup>
+        <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+        <Version>$(PackageVersion)</Version>
+        <Authors>YouYan</Authors>
+        <PackageId>Markdown.Avalonia.YouYan</PackageId>
+        <AssemblyName>Markdown.Avalonia.Full</AssemblyName>
+        <RootNamespace>Markdown.Avalonia.Full</RootNamespace>
+        <Company>Nanjing YouYan</Company>
+        <Description>Markdown Controls for Avalonia</Description>
+        <Copyright>Nanjing Youyan</Copyright>
+        <PackageProjectUrl>
+            <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
+        </PackageProjectUrl>
+        <LangVersion>14</LangVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>Markdown.Avalonia.md</PackageReadmeFile>
+        <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
+        <Title>markdown</Title>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\pack_readme\Markdown.Avalonia.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Markdown.Avalonia.Html\Markdown.Avalonia.Html.csproj"/>
+        <ProjectReference Include="..\Markdown.Avalonia.Svg\Markdown.Avalonia.Svg.csproj"/>
+        <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj"/>
+    </ItemGroup>
+    <ItemGroup Condition="&apos;$(EnableAvaloniaEdit)&apos; == &apos;enabled&apos;">
+        <ProjectReference Include="..\Markdown.Avalonia.SyntaxHigh\Markdown.Avalonia.SyntaxHigh.csproj"/>
+    </ItemGroup>
 </Project>

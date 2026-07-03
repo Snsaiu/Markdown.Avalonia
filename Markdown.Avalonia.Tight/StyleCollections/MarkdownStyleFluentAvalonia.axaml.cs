@@ -1,19 +1,15 @@
 ﻿using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Markdown.Avalonia.StyleCollections
+namespace Markdown.Avalonia.StyleCollections;
+
+public class MarkdownStyleFluentAvalonia : Styles, INamedStyle
 {
-    public class MarkdownStyleFluentAvalonia : Styles, INamedStyle
+    public MarkdownStyleFluentAvalonia()
     {
-        public string Name => nameof(MarkdownStyle.FluentAvalonia);
-        public bool IsEditted { get; set; }
-
-        public MarkdownStyleFluentAvalonia()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        AvaloniaXamlLoader.Load(this);
     }
+
+    public string Name => nameof(MarkdownStyle.FluentAvalonia);
+    public bool IsEditted { get; set; }
 }

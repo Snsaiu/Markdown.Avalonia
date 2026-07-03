@@ -1,17 +1,16 @@
-﻿using Avalonia.Media;
-using Avalonia.Layout;
+﻿using Avalonia.Layout;
+using Avalonia.Media;
 
-namespace Markdown.Avalonia.Tables
+namespace Markdown.Avalonia.Tables;
+
+internal interface ITableCell
 {
-    interface ITableCell
-    {
-        int ColumnIndex { get; }
+    int ColumnIndex { get; }
 
-        string? RawText { get; }
-        string? Text { get; }
-        int RowSpan { get; }
-        int ColSpan { get; }
-        TextAlignment? Horizontal { get; }
-        VerticalAlignment? Vertical { get; }
-    }
+    string? RawText { get; }
+    string? Text { get; }
+    int RowSpan { get; }
+    int ColSpan { get; }
+    TextAlignment? Horizontal { get; }
+    VerticalAlignment? Vertical { get; }
 }

@@ -1,134 +1,145 @@
-﻿using Avalonia.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
+using Avalonia.Controls;
 
-namespace Markdown.Avalonia.Parsers
+namespace Markdown.Avalonia.Parsers;
+
+public delegate Control? ParseWithPositionChange(string text, Match match, out int parseTextBegin, out int parseTextEnd);
+
+public abstract class BlockParser
 {
-    public delegate Control? ParseWithPositionChange(string text, Match match, out int parseTextBegin, out int parseTextEnd);
-
-    public abstract class BlockParser
+    public BlockParser(Regex pattern, string name)
     {
-        public Regex Pattern { get; }
+        Pattern = pattern;
+        Name = name;
+    }
 
-        public string Name { get; }
+    public Regex Pattern { get; }
 
-        public BlockParser(Regex pattern, string name)
+    public string Name { get; }
+
+    public abstract IEnumerable<Control>? Convert(
+        string text, Match firstMatch, ParseStatus status,
+        IMarkdownEngine engine,
+        out int parseTextBegin, out int parseTextEnd);
+
+    public static BlockParser New(Regex pattern, string name, Func<Match, Control?> v1)
+    {
+        return new Single(pattern, name, v1);
+    }
+
+    public static BlockParser New(Regex pattern, string name, Func<Match, ParseStatus, Control?> v2)
+    {
+        return new Single2(pattern, name, v2);
+    }
+
+    public static BlockParser New(Regex pattern, string name, Func<Match, IEnumerable<Control>?> v2)
+    {
+        return new Multi(pattern, name, v2);
+    }
+
+    public static BlockParser New(Regex pattern, string name, Func<Match, ParseStatus, IEnumerable<Control>?> v2)
+    {
+        return new Multi2(pattern, name, v2);
+    }
+
+    public static BlockParser New(Regex pattern, string name, ParseWithPositionChange v2)
+    {
+        return new ParsePosChange(pattern, name, v2);
+    }
+
+    private abstract class Wrapper : BlockParser
+    {
+        public Wrapper(Regex pattern, string name) : base(pattern, name)
         {
-            Pattern = pattern;
-            Name = name;
         }
 
-        public abstract IEnumerable<Control>? Convert(
+        public override IEnumerable<Control>? Convert(
             string text, Match firstMatch, ParseStatus status,
             IMarkdownEngine engine,
-            out int parseTextBegin, out int parseTextEnd);
-
-        public static BlockParser New(Regex pattern, string name, Func<Match, Control?> v1)
-            => new Single(pattern, name, v1);
-
-        public static BlockParser New(Regex pattern, string name, Func<Match, ParseStatus, Control?> v2)
-            => new Single2(pattern, name, v2);
-
-        public static BlockParser New(Regex pattern, string name, Func<Match, IEnumerable<Control>?> v2)
-            => new Multi(pattern, name, v2);
-
-        public static BlockParser New(Regex pattern, string name, Func<Match, ParseStatus, IEnumerable<Control>?> v2)
-            => new Multi2(pattern, name, v2);
-
-        public static BlockParser New(Regex pattern, string name, ParseWithPositionChange v2)
-            => new ParsePosChange(pattern, name, v2);
-
-        abstract class Wrapper : BlockParser
+            out int parseTextBegin, out int parseTextEnd)
         {
-            public Wrapper(Regex pattern, string name) : base(pattern, name)
-            {
-            }
-
-            public override IEnumerable<Control>? Convert(
-                string text, Match firstMatch, ParseStatus status,
-                IMarkdownEngine engine,
-                out int parseTextBegin, out int parseTextEnd)
-            {
-                parseTextBegin = firstMatch.Index;
-                parseTextEnd = parseTextBegin + firstMatch.Length;
-                return Convert(firstMatch, status);
-            }
-
-            public abstract IEnumerable<Control>? Convert(Match match, ParseStatus status);
+            parseTextBegin = firstMatch.Index;
+            parseTextEnd = parseTextBegin + firstMatch.Length;
+            return Convert(firstMatch, status);
         }
 
-        sealed class Single : Wrapper
+        public abstract IEnumerable<Control>? Convert(Match match, ParseStatus status);
+    }
+
+    private sealed class Single : Wrapper
+    {
+        private readonly Func<Match, Control?> converter;
+
+        public Single(Regex pattern, string name, Func<Match, Control?> converter) : base(pattern, name)
         {
-            private readonly Func<Match, Control?> converter;
-
-            public Single(Regex pattern, string name, Func<Match, Control?> converter) : base(pattern, name)
-            {
-                this.converter = converter;
-            }
-
-            public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
-            {
-                return converter(match) is Control ctrl ? new[] { ctrl } : null;
-            }
+            this.converter = converter;
         }
 
-        sealed class Single2 : Wrapper
+        public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
         {
-            private readonly Func<Match, ParseStatus, Control?> converter;
+            return converter(match) is Control ctrl ? new[] { ctrl } : null;
+        }
+    }
 
-            public Single2(Regex pattern, string name, Func<Match, ParseStatus, Control?> converter) : base(pattern, name)
-            {
-                this.converter = converter;
-            }
+    private sealed class Single2 : Wrapper
+    {
+        private readonly Func<Match, ParseStatus, Control?> converter;
 
-            public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
-            {
-                return converter(match, status) is Control ctrl ? new[] { ctrl } : null;
-            }
+        public Single2(Regex pattern, string name, Func<Match, ParseStatus, Control?> converter) : base(pattern, name)
+        {
+            this.converter = converter;
         }
 
-        sealed class Multi : Wrapper
+        public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
         {
-            private readonly Func<Match, IEnumerable<Control>?> converter;
+            return converter(match, status) is Control ctrl ? new[] { ctrl } : null;
+        }
+    }
 
-            public Multi(Regex pattern, string name, Func<Match, IEnumerable<Control>?> converter) : base(pattern, name)
-            {
-                this.converter = converter;
-            }
+    private sealed class Multi : Wrapper
+    {
+        private readonly Func<Match, IEnumerable<Control>?> converter;
 
-            public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
-                => converter(match);
+        public Multi(Regex pattern, string name, Func<Match, IEnumerable<Control>?> converter) : base(pattern, name)
+        {
+            this.converter = converter;
         }
 
-        sealed class Multi2 : Wrapper
+        public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
         {
-            private readonly Func<Match, ParseStatus, IEnumerable<Control>?> converter;
+            return converter(match);
+        }
+    }
 
-            public Multi2(Regex pattern, string name, Func<Match, ParseStatus, IEnumerable<Control>?> converter) : base(pattern, name)
-            {
-                this.converter = converter;
-            }
+    private sealed class Multi2 : Wrapper
+    {
+        private readonly Func<Match, ParseStatus, IEnumerable<Control>?> converter;
 
-            public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
-                => converter(match, status);
+        public Multi2(Regex pattern, string name, Func<Match, ParseStatus, IEnumerable<Control>?> converter) : base(pattern, name)
+        {
+            this.converter = converter;
         }
 
-        sealed class ParsePosChange : BlockParser
+        public override IEnumerable<Control>? Convert(Match match, ParseStatus status)
         {
-            private ParseWithPositionChange converter;
+            return converter(match, status);
+        }
+    }
 
-            public ParsePosChange(Regex pattern, string name, ParseWithPositionChange converter) : base(pattern, name)
-            {
-                this.converter = converter;
-            }
+    private sealed class ParsePosChange : BlockParser
+    {
+        private readonly ParseWithPositionChange converter;
 
-            public override IEnumerable<Control>? Convert(string text, Match firstMatch, ParseStatus status, IMarkdownEngine engine, out int parseTextBegin, out int parseTextEnd)
-            {
-                return converter(text, firstMatch, out parseTextBegin, out parseTextEnd) is Control ctrl ?
-                    new[] { ctrl } : null;
-            }
+        public ParsePosChange(Regex pattern, string name, ParseWithPositionChange converter) : base(pattern, name)
+        {
+            this.converter = converter;
+        }
+
+        public override IEnumerable<Control>? Convert(string text, Match firstMatch, ParseStatus status, IMarkdownEngine engine, out int parseTextBegin, out int parseTextEnd)
+        {
+            return converter(text, firstMatch, out parseTextBegin, out parseTextEnd) is Control ctrl ? new[] { ctrl } : null;
         }
     }
 }

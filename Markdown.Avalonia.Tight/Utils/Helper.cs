@@ -1,16 +1,11 @@
-﻿using Avalonia;
-using Avalonia.Platform;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
-namespace Markdown.Avalonia.Utils
+namespace Markdown.Avalonia.Utils;
+
+internal static class Helper
 {
-    static class Helper
+    public static void ThrowInvalidOperation(string msg)
     {
-        public static void ThrowInvalidOperation(string msg)
-        {
-            throw new InvalidOperationException(msg);
-        }
+        throw new InvalidOperationException(msg);
     }
 }

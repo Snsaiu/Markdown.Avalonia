@@ -1,33 +1,42 @@
 ﻿using System;
 
-namespace Markdown.Avalonia
+namespace Markdown.Avalonia;
+
+public class Header : IEquatable<Header>
 {
-    public class Header : IEquatable<Header>
+    public Header(int lv, string txt)
     {
-        public int Level { get; }
-        public string Text { get; }
+        Level = lv;
+        Text = txt;
+    }
 
-        public Header(int lv, string txt)
-        {
-            Level = lv;
-            Text = txt;
-        }
+    public int Level { get; }
+    public string Text { get; }
 
-        public override int GetHashCode()
-            => Level + Text.GetHashCode();
+    public bool Equals(Header? other)
+    {
+        return Level == other.Level && Text == other.Text;
+    }
 
-        public override bool Equals(object? obj)
-            => obj is Header arg ? Equals(arg) : false;
+    public override int GetHashCode()
+    {
+        return Level + Text.GetHashCode();
+    }
 
-        public bool Equals(Header? other)
-            => Level == other.Level && Text == other.Text;
+    public override bool Equals(object? obj)
+    {
+        return obj is Header arg ? Equals(arg) : false;
+    }
 
-        public static bool operator !=(Header? left, Header? right)
-            => !(left == right);
+    public static bool operator !=(Header? left, Header? right)
+    {
+        return !(left == right);
+    }
 
-        public static bool operator ==(Header? left, Header? right)
-            => left is not null ? left.Equals(right) :
-               right is not null ? false :
-               true;
+    public static bool operator ==(Header? left, Header? right)
+    {
+        return left is not null ? left.Equals(right) :
+            right is not null ? false :
+            true;
     }
 }

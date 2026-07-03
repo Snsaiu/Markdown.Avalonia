@@ -1,144 +1,140 @@
-﻿using Avalonia;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media;
 using ColorTextBlock.Avalonia.Geometries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace ColorTextBlock.Avalonia
+namespace ColorTextBlock.Avalonia;
+
+/// <summary>
+///     Hyperlink decoration
+/// </summary>
+public class CHyperlink : CSpan
 {
     /// <summary>
-    /// Hyperlink decoration
+    ///     Background brush during mouse hover
     /// </summary>
-    public class CHyperlink : CSpan
+    /// <seealso cref="HoverBackground" />
+    public static readonly StyledProperty<IBrush?> HoverBackgroundProperty =
+        AvaloniaProperty.Register<CHyperlink, IBrush?>(nameof(Foreground));
+
+    /// <summary>
+    ///     Foreground brush during mouse hover
+    /// </summary>
+    /// <seealso cref="HoverForeground" />
+    public static readonly StyledProperty<IBrush?> HoverForegroundProperty =
+        AvaloniaProperty.Register<CHyperlink, IBrush?>(nameof(Foreground));
+
+    public CHyperlink()
     {
-        /// <summary>
-        /// Background brush during mouse hover
-        /// </summary>
-        /// <seealso cref="HoverBackground"/>
-        public static readonly StyledProperty<IBrush?> HoverBackgroundProperty =
-            AvaloniaProperty.Register<CHyperlink, IBrush?>(nameof(Foreground));
+    }
 
-        /// <summary>
-        /// Foreground brush during mouse hover
-        /// </summary>
-        /// <seealso cref="HoverForeground"/>
-        public static readonly StyledProperty<IBrush?> HoverForegroundProperty =
-            AvaloniaProperty.Register<CHyperlink, IBrush?>(nameof(Foreground));
+    public CHyperlink(IEnumerable<CInline> inlines) : base(inlines)
+    {
+    }
 
-        /// <summary>
-        /// Background brush during mouse hover
-        /// </summary>
-        public IBrush? HoverBackground
+    /// <summary>
+    ///     Background brush during mouse hover
+    /// </summary>
+    public IBrush? HoverBackground
+    {
+        get => GetValue(HoverBackgroundProperty);
+        set => SetValue(HoverBackgroundProperty, value);
+    }
+
+    /// <summary>
+    ///     Foreground brush during mouse hover
+    /// </summary>
+    public IBrush? HoverForeground
+    {
+        get => GetValue(HoverForegroundProperty);
+        set => SetValue(HoverForegroundProperty, value);
+    }
+
+    /// <summary>
+    ///     Link click action
+    /// </summary>
+    public Action<string>? Command { get; set; }
+
+    /// <summary>
+    ///     Link click action parameter
+    /// </summary>
+    public string? CommandParameter { get; set; }
+
+    protected override IEnumerable<CGeometry> MeasureOverride(
+        double entireWidth,
+        double remainWidth)
+    {
+        var metrics = base.MeasureOverride(
+            entireWidth,
+            remainWidth);
+
+        foreach (var metry in metrics)
         {
-            get { return GetValue(HoverBackgroundProperty); }
-            set { SetValue(HoverBackgroundProperty, value); }
-        }
+            metry.OnClick = ctrl => Command?.Invoke(CommandParameter ?? string.Empty);
 
-        /// <summary>
-        /// Foreground brush during mouse hover
-        /// </summary>
-        public IBrush? HoverForeground
-        {
-            get { return GetValue(HoverForegroundProperty); }
-            set { SetValue(HoverForegroundProperty, value); }
-        }
+            metry.OnMousePressed = ctrl => { PseudoClasses.Add(":pressed"); };
 
-        /// <summary>
-        /// Link click action
-        /// </summary>
-        public Action<string>? Command { get; set; }
-        /// <summary>
-        /// Link click action parameter
-        /// </summary>
-        public string? CommandParameter { get; set; }
+            metry.OnMouseReleased = ctrl => { PseudoClasses.Remove(":pressed"); };
 
-        public CHyperlink() { }
-
-        public CHyperlink(IEnumerable<CInline> inlines) : base(inlines)
-        {
-        }
-
-
-        protected override IEnumerable<CGeometry> MeasureOverride(
-            double entireWidth,
-            double remainWidth)
-        {
-            var metrics = base.MeasureOverride(
-                entireWidth,
-                remainWidth);
-
-            foreach (CGeometry metry in metrics)
+            metry.OnMouseEnter = ctrl =>
             {
-                metry.OnClick = ctrl => Command?.Invoke(CommandParameter ?? string.Empty);
+                PseudoClasses.Add(":pointerover");
+                PseudoClasses.Add(":hover");
 
-                metry.OnMousePressed = ctrl =>
+                try
                 {
-                    PseudoClasses.Add(":pressed");
-                };
-
-                metry.OnMouseReleased = ctrl =>
+                    ctrl.Cursor = new Cursor(StandardCursorType.Hand);
+                }
+                catch
                 {
-                    PseudoClasses.Remove(":pressed");
-                };
+                    /*I cannot assume Cursor.ctor doesn't throw an exception.*/
+                }
 
-                metry.OnMouseEnter = ctrl =>
+                var tmetries =
+                    metry is DecoratorGeometry d ? d.Targets.OfType<TextGeometry>() :
+                    metry is TextGeometry t ? new[] { t } :
+                    new TextGeometry[0];
+
+                if (tmetries != null)
                 {
-                    PseudoClasses.Add(":pointerover");
-                    PseudoClasses.Add(":hover");
-
-                    try
+                    foreach (var tmetry in tmetries)
                     {
-                        ctrl.Cursor = new Cursor(StandardCursorType.Hand);
+                        tmetry.TemporaryForeground = HoverForeground;
+                        tmetry.TemporaryBackground = HoverBackground;
                     }
-                    catch { /*I cannot assume Cursor.ctor doesn't throw an exception.*/ }
 
-                    IEnumerable<TextGeometry> tmetries =
-                        (metry is DecoratorGeometry d) ?
-                            d.Targets.OfType<TextGeometry>() :
-                        (metry is TextGeometry t) ?
-                            new[] { t } :
-                            new TextGeometry[0];
+                    RequestRender();
+                }
+            };
 
-                    if (tmetries != null)
-                    {
-                        foreach (var tmetry in tmetries)
-                        {
-                            tmetry.TemporaryForeground = HoverForeground;
-                            tmetry.TemporaryBackground = HoverBackground;
-                        }
-                        RequestRender();
-                    }
-                };
+            metry.OnMouseLeave = ctrl =>
+            {
+                PseudoClasses.Remove(":pointerover");
+                PseudoClasses.Remove(":hover");
 
-                metry.OnMouseLeave = ctrl =>
+                ctrl.Cursor = Cursor.Default;
+
+                var tmetries =
+                    metry is DecoratorGeometry d ? d.Targets.OfType<TextGeometry>() :
+                    metry is TextGeometry t ? new[] { t } :
+                    new TextGeometry[0];
+
+                if (tmetries != null)
                 {
-                    PseudoClasses.Remove(":pointerover");
-                    PseudoClasses.Remove(":hover");
-
-                    ctrl.Cursor = Cursor.Default;
-
-                    IEnumerable<TextGeometry> tmetries =
-                        (metry is DecoratorGeometry d) ?
-                            d.Targets.OfType<TextGeometry>() :
-                        (metry is TextGeometry t) ?
-                            new[] { t } :
-                            new TextGeometry[0];
-
-                    if (tmetries != null)
+                    foreach (var tmetry in tmetries)
                     {
-                        foreach (var tmetry in tmetries)
-                        {
-                            tmetry.TemporaryForeground = null;
-                            tmetry.TemporaryBackground = null;
-                        }
-                        RequestRender();
+                        tmetry.TemporaryForeground = null;
+                        tmetry.TemporaryBackground = null;
                     }
-                };
 
-                yield return metry;
-            }
+                    RequestRender();
+                }
+            };
+
+            yield return metry;
         }
     }
 }

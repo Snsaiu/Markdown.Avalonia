@@ -3,6 +3,7 @@
 Markdown.Avalonia is a portted version of [MdXaml](https://github.com/whistyun/MdXaml) for [Avalonia UI](https://www.avaloniaui.net/).
 It can render Markdown with avalonia.
 
+The current source targets .NET 10 and Avalonia 12.
 
 ## Sample
 
@@ -20,6 +21,7 @@ The table of compability with Avalonia's version.
 
 | AvaloniaUI         | Markdown.Avalonia |
 |--------------------|-------------------|
+| 12.0.5             | 12.0.0-a1         |
 | 11.1.0-beta1       | 11.0.3-a1         |
 | 11.0.0             | 11.0.0～11.0.3-a1 |
 | 11.0.0-rc1.1       | 11.0.0-d1～d2     |
@@ -56,4 +58,4 @@ Markdown.Avalonia is licensed under the MIT license.
   * HtmlAgilityPack (MIT) https://github.com/zzzprojects/html-agility-pack
 
 * Markdown.Avalonia.Svg
-  * Avalonia.Svg (MIT) https://github.com/wieslawsoltes/Svg.Skia
+  * Svg.Controls.Avalonia (MIT) https://github.com/wieslawsoltes/Svg.Skia

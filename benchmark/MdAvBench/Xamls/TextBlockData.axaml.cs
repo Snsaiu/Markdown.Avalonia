@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace MdAvBench.Xamls
+namespace MdAvBench.Xamls;
+
+public class TextBlockData : UserControl
 {
-    public partial class TextBlockData : UserControl
+    public TextBlockData()
     {
-        public TextBlockData()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

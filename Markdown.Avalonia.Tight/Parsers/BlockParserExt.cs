@@ -1,88 +1,111 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
+using Avalonia.Controls;
 using ColorDocument.Avalonia;
 using ColorDocument.Avalonia.DocumentElements;
 using ColorTextBlock.Avalonia;
 using Markdown.Avalonia.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
-namespace Markdown.Avalonia.Parsers
+namespace Markdown.Avalonia.Parsers;
+
+public static class BlockParserExt
 {
-    public static class BlockParserExt
+    public static BlockParser2 Upgrade(this BlockParser parser)
     {
-        public static BlockParser2 Upgrade(this BlockParser parser)
+        return parser is BlockParser2 parser2 ? parser2 : new BlockParserUpg(parser);
+    }
+
+    private class BlockParserUpg : BlockParser2
+    {
+        private readonly BlockParser _parser;
+
+        public BlockParserUpg(BlockParser parser) : base(parser.Pattern, parser.Name)
         {
-            return parser is BlockParser2 parser2 ? parser2 : new BlockParserUpg(parser);
+            _parser = parser;
         }
 
-        class BlockParserUpg : BlockParser2
+        public override IEnumerable<DocumentElement>? Convert2(string text, Match firstMatch, ParseStatus status, IMarkdownEngine2 engine2, out int parseTextBegin, out int parseTextEnd)
         {
-            private BlockParser _parser;
+            var engine = engine2 is IMarkdownEngine e ? e : new MarkdownEngineDng(engine2);
 
-            public BlockParserUpg(BlockParser parser) : base(parser.Pattern, parser.Name)
-            {
-                _parser = parser;
-            }
+            var rtn = _parser.Convert(text, firstMatch, status, engine, out parseTextBegin, out parseTextEnd);
+            return rtn.Select(c => new UnBlockElement(c));
+        }
+    }
 
-            public override IEnumerable<DocumentElement>? Convert2(string text, Match firstMatch, ParseStatus status, IMarkdownEngine2 engine2, out int parseTextBegin, out int parseTextEnd)
-            {
-                IMarkdownEngine engine = engine2 is IMarkdownEngine e ? e : new MarkdownEngineDng(engine2);
+    private class MarkdownEngineDng : IMarkdownEngine
+    {
+        private readonly IMarkdownEngine2 _engine;
 
-                var rtn = _parser.Convert(text, firstMatch, status, engine, out parseTextBegin, out parseTextEnd);
-                return rtn.Select(c => new UnBlockElement(c));
-            }
+        public MarkdownEngineDng(IMarkdownEngine2 engine2)
+        {
+            _engine = engine2;
         }
 
-        class MarkdownEngineDng : IMarkdownEngine
+        public string AssetPathRoot
         {
-            private IMarkdownEngine2 _engine;
+            get => _engine.AssetPathRoot;
+            set => _engine.AssetPathRoot = value;
+        }
 
-            public string AssetPathRoot { get => _engine.AssetPathRoot; set => _engine.AssetPathRoot = value; }
-            public ICommand? HyperlinkCommand { get => _engine.HyperlinkCommand; set => _engine.HyperlinkCommand = value; }
-            public IBitmapLoader? BitmapLoader { 
-                get => throw new NotImplementedException();
-                set => throw new NotImplementedException(); }
-            public IContainerBlockHandler? ContainerBlockHandler { get => _engine.ContainerBlockHandler; set => _engine.ContainerBlockHandler = value; }
-            public MdAvPlugins Plugins { get => _engine.Plugins; set => _engine.Plugins = value; }
-            public bool UseResource { get => _engine.UseResource; set => _engine.UseResource = value; }
-            public CascadeDictionary CascadeResources => _engine.CascadeResources;
-            public IResourceDictionary Resources { get => _engine.Resources; set => _engine.Resources = value; }
+        public ICommand? HyperlinkCommand
+        {
+            get => _engine.HyperlinkCommand;
+            set => _engine.HyperlinkCommand = value;
+        }
 
-            public MarkdownEngineDng(IMarkdownEngine2 engine2)
-            {
-                _engine = engine2;
-            }
+        public IBitmapLoader? BitmapLoader
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
-            public IEnumerable<Control> RunBlockGamut(string? text, ParseStatus status)
-            {
-                if (text is null)
-                {
-                    throw new ArgumentNullException(nameof(text));
-                }
+        public IContainerBlockHandler? ContainerBlockHandler
+        {
+            get => _engine.ContainerBlockHandler;
+            set => _engine.ContainerBlockHandler = value;
+        }
 
-                return _engine.ParseGamutElement(TextUtil.Normalize(text), status).Select(e => e.Control);
-            }
+        public MdAvPlugins Plugins
+        {
+            get => _engine.Plugins;
+            set => _engine.Plugins = value;
+        }
 
-            public IEnumerable<CInline> RunSpanGamut(string? text)
-            {
-                if (text is null)
-                {
-                    throw new ArgumentNullException(nameof(text));
-                }
+        public bool UseResource
+        {
+            get => _engine.UseResource;
+            set => _engine.UseResource = value;
+        }
 
-                return _engine.ParseGamutInline(TextUtil.Normalize(text));
-            }
+        public CascadeDictionary CascadeResources => _engine.CascadeResources;
 
-            public Control Transform(string text)
-            {
-                return _engine.Transform(text);
-            }
+        public IResourceDictionary Resources
+        {
+            get => _engine.Resources;
+            set => _engine.Resources = value;
+        }
+
+        public IEnumerable<Control> RunBlockGamut(string? text, ParseStatus status)
+        {
+            if (text is null) throw new ArgumentNullException(nameof(text));
+
+            return _engine.ParseGamutElement(TextUtil.Normalize(text), status).Select(e => e.Control);
+        }
+
+        public IEnumerable<CInline> RunSpanGamut(string? text)
+        {
+            if (text is null) throw new ArgumentNullException(nameof(text));
+
+            return _engine.ParseGamutInline(TextUtil.Normalize(text));
+        }
+
+        public Control Transform(string text)
+        {
+            return _engine.Transform(text);
         }
     }
 }

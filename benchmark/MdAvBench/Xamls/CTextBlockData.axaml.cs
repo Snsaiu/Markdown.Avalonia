@@ -1,20 +1,17 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using ColorTextBlock.Avalonia;
 
-namespace UnitTest.CTxt.Xamls
+namespace UnitTest.CTxt.Xamls;
+
+public class CTextBlockData : UserControl
 {
-    public partial class CTextBlockData : UserControl
+    public CTextBlockData()
     {
-        public CTextBlockData()
-        {
-            this.InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

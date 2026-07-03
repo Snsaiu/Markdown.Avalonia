@@ -1,18 +1,17 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition=" &apos;$(OS)&apos; == &apos;Windows_NT&apos; ">
-    <PackageTargetFrameworks>net461;netstandard2.0;net6</PackageTargetFrameworks>
-    <DemoAppTargetFrameworks>net461;netcoreapp3.1;net6;net7</DemoAppTargetFrameworks>
-    <TestTargetFrameworks>net6</TestTargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" &apos;$(IS_WHISTYUN_PC)&apos; == &apos;Y&apos; ">
-    <TestTargetFrameworks>netcoreapp3.1;net5;net6;net7</TestTargetFrameworks>
-  </PropertyGroup>
   <PropertyGroup>
-    <AvaloniaVersion>11.2.6</AvaloniaVersion>
-    <DemoAvaloniaVersion>11.2.6</DemoAvaloniaVersion>
+    <PackageTargetFrameworks>net10.0</PackageTargetFrameworks>
+    <DemoAppTargetFrameworks>net10.0</DemoAppTargetFrameworks>
+    <TestTargetFrameworks>net10.0</TestTargetFrameworks>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaVersion>12.0.5</AvaloniaVersion>
+    <DemoAvaloniaVersion>$(AvaloniaVersion)</DemoAvaloniaVersion>
     <EnableAvaloniaEdit>enabled</EnableAvaloniaEdit>
-    <AvaloniaEditVersion>11.0.0</AvaloniaEditVersion>
-    <AvaloniaSvgVersion>11.0.0</AvaloniaSvgVersion>
+    <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
+    <AvaloniaSvgVersion>12.0.0.13</AvaloniaSvgVersion>
+    <ReactiveUIAvaloniaVersion>12.0.3</ReactiveUIAvaloniaVersion>
+    <FluentAvaloniaVersion>3.0.0</FluentAvaloniaVersion>
+    <AvaloniaDiagnosticsSupportVersion>2.2.3</AvaloniaDiagnosticsSupportVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" &apos;$(AVA_VER)&apos; != &apos;&apos; ">
     <TestAvaloniaVersion>$(AVA_VER)</TestAvaloniaVersion>
@@ -21,6 +20,6 @@
     <TestAvaloniaVersion>$(AvaloniaVersion)</TestAvaloniaVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageVersion>11.2-a3</PackageVersion>
+    <PackageVersion>12.0-a1</PackageVersion>
   </PropertyGroup>
 </Project>

@@ -1,9 +1,9 @@
-Markdown.Avalonia render Markdown with avalonia ui. It transform markdown to controls (ex: Border, Grid, TextBlock). 
+Markdown.Avalonia render Markdown with avalonia ui. It transform markdown to controls (ex: Border, Grid, TextBlock).
 
 This package depends on AvaloniaEdit for syntax highlighting.
 If you don't want it, use [Markdown.Avalonia.Tight](https://www.nuget.org/packages/Markdown.Avalonia.Tight) instead.
 
-**How to use**  
+**How to use**
 
 Markdown.Avalonia supports three methods to render markdown.
 

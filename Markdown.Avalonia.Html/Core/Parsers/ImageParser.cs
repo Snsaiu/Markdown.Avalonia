@@ -1,4 +1,8 @@
-﻿using Avalonia;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Avalonia;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Layout;
@@ -6,121 +10,109 @@ using ColorTextBlock.Avalonia;
 using HtmlAgilityPack;
 using Markdown.Avalonia.Html.Core.Utils;
 using Markdown.Avalonia.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
-namespace Markdown.Avalonia.Html.Core.Parsers
+namespace Markdown.Avalonia.Html.Core.Parsers;
+
+public class ImageParser : IInlineTagParser
 {
-    public class ImageParser : IInlineTagParser
+    private readonly SetupInfo _setupInfo;
+
+    public ImageParser(SetupInfo info)
     {
-        private SetupInfo _setupInfo;
+        _setupInfo = info;
+    }
 
-        public ImageParser(SetupInfo info)
+    public IEnumerable<string> SupportTag => new[] { "img", "image" };
+
+    bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<StyledElement> generated)
+    {
+        var rtn = TryReplace(node, manager, out var list);
+        generated = list;
+        return rtn;
+    }
+
+    public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<CInline> generated)
+    {
+        var link = node.Attributes["src"]?.Value;
+        var alt = node.Attributes["alt"]?.Value;
+        if (link is null)
         {
-            _setupInfo = info;
+            generated = EnumerableExt.Empty<CInline>();
+            return false;
         }
 
-        public IEnumerable<string> SupportTag => new[] { "img", "image" };
+        var title = node.Attributes["title"]?.Value;
+        var widthTxt = node.Attributes["width"]?.Value;
+        var heightTxt = node.Attributes["height"]?.Value;
 
-        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<StyledElement> generated)
+        var image = _setupInfo.LoadImage(link);
+        if (!string.IsNullOrEmpty(title)
+            && !title.Any(ch => !char.IsLetterOrDigit(ch)))
+            image.Classes.Add(title);
+
+        if (Length.TryParse(heightTxt, out var heightLen))
         {
-            var rtn = TryReplace(node, manager, out var list);
-            generated = list;
-            return rtn;
+            if (heightLen.Unit == Unit.Percentage)
+                image.Bind(CImage.LayoutHeightProperty,
+                    new Binding(nameof(Layoutable.Height))
+                    {
+                        RelativeSource = new RelativeSource
+                        {
+                            Mode = RelativeSourceMode.FindAncestor,
+                            AncestorType = typeof(CTextBlock)
+                        },
+                        Converter = new MultiplyConverter(heightLen.Value / 100)
+                    });
+            else
+                image.LayoutHeight = heightLen.ToPoint();
         }
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<CInline> generated)
+        // Bind size so document is updated when image is downloaded
+        if (Length.TryParse(widthTxt, out var widthLen))
         {
-            var link = node.Attributes["src"]?.Value;
-            var alt = node.Attributes["alt"]?.Value;
-            if (link is null)
+            if (widthLen.Unit == Unit.Percentage)
             {
-                generated = EnumerableExt.Empty<CInline>();
-                return false;
+                image.Bind(CImage.LayoutHeightProperty,
+                    new Binding(nameof(Layoutable.Width))
+                    {
+                        RelativeSource = new RelativeSource
+                        {
+                            Mode = RelativeSourceMode.FindAncestor,
+                            AncestorType = typeof(CTextBlock)
+                        },
+                        Converter = new MultiplyConverter(widthLen.Value / 100)
+                    });
             }
-            var title = node.Attributes["title"]?.Value;
-            var widthTxt = node.Attributes["width"]?.Value;
-            var heightTxt = node.Attributes["height"]?.Value;
-
-
-            CImage image = _setupInfo.LoadImage(link);
-            if (!String.IsNullOrEmpty(title)
-                && !title.Any(ch => !Char.IsLetterOrDigit(ch)))
+            else
             {
-                image.Classes.Add(title);
-            }
-
-
-            if (Length.TryParse(heightTxt, out var heightLen))
-            {
-                if (heightLen.Unit == Unit.Percentage)
-                {
-                    image.Bind(CImage.LayoutHeightProperty,
-                               new Binding(nameof(Layoutable.Height))
-                               {
-                                   RelativeSource = new RelativeSource()
-                                   {
-                                       Mode = RelativeSourceMode.FindAncestor,
-                                       AncestorType = typeof(CTextBlock),
-                                   },
-                                   Converter = new MultiplyConverter(heightLen.Value / 100)
-                               });
-                }
+                if (image.LayoutHeight.HasValue)
+                    image.LayoutWidth = widthLen.ToPoint();
                 else
-                {
-                    image.LayoutHeight = heightLen.ToPoint();
-                }
+                    image.RelativeWidth = widthLen.ToPoint();
             }
-
-            // Bind size so document is updated when image is downloaded
-            if (Length.TryParse(widthTxt, out var widthLen))
-            {
-                if (widthLen.Unit == Unit.Percentage)
-                {
-                    image.Bind(CImage.LayoutHeightProperty,
-                               new Binding(nameof(Layoutable.Width))
-                               {
-                                   RelativeSource = new RelativeSource()
-                                   {
-                                       Mode = RelativeSourceMode.FindAncestor,
-                                       AncestorType = typeof(CTextBlock),
-                                   },
-                                   Converter = new MultiplyConverter(widthLen.Value / 100)
-                               });
-                }
-                else
-                {
-                    if (image.LayoutHeight.HasValue)
-                        image.LayoutWidth = widthLen.ToPoint();
-                    else
-                        image.RelativeWidth = widthLen.ToPoint();
-                }
-            }
-
-            generated = new[] { image };
-            return true;
         }
 
-        class MultiplyConverter : IValueConverter
+        generated = new[] { image };
+        return true;
+    }
+
+    private class MultiplyConverter : IValueConverter
+    {
+        public MultiplyConverter(double v)
         {
-            public double Value { get; }
+            Value = v;
+        }
 
-            public MultiplyConverter(double v)
-            {
-                Value = v;
-            }
+        public double Value { get; }
 
-            public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-            {
-                return value is null ? 0d : Value * (Double)value;
-            }
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            return value is null ? 0d : Value * (double)value;
+        }
 
-            public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-            {
-                return value is null ? 0d : ((Double)value) / Value;
-            }
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            return value is null ? 0d : (double)value / Value;
         }
     }
 }

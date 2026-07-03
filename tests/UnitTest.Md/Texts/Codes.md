@@ -26,7 +26,6 @@ public void Main(){
    }
    ```
 
-
     ```cs
     public void Main(){
         Console.WriteLine("`Hello World`");
@@ -100,37 +99,30 @@ public void Main(){
      ijkl
 
     opqr
+
     
 ---
 
 >     asdf
 >      ghij
 
-*   
-      public void Main(){
+*
+    public void Main(){
 
 
 
 
-  
 
 
 
 
-      }
+
+    }
 
 * * *
 
 + one
-      public void Main(){
-
-
-
-
-  
-
-
-
+  public void Main(){
 
       }
 
@@ -143,7 +135,7 @@ public void Main(){
 
 
 
-  
+
 
 
 

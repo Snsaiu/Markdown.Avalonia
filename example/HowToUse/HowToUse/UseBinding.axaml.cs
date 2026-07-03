@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace HowToUse
 {
-    public class UseBinding : UserControl
+    public partial class UseBinding : UserControl
     {
         public UseBinding()
         {

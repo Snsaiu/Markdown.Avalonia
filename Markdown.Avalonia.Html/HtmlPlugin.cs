@@ -1,33 +1,32 @@
-﻿using Markdown.Avalonia.Plugins;
-using Markdown.Avalonia.SyntaxHigh;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Markdown.Avalonia.Plugins;
+using Markdown.Avalonia.SyntaxHigh;
 
-namespace Markdown.Avalonia.Html
+namespace Markdown.Avalonia.Html;
+
+public class HtmlPlugin : IMdAvPluginRequestAnother
 {
-    public class HtmlPlugin : IMdAvPluginRequestAnother
+    private SyntaxHighlight? _syntax;
+
+    public IEnumerable<Type> DependsOn => new[] { typeof(SyntaxHighlight) };
+
+    public void Inject(IEnumerable<IMdAvPlugin> plugin)
     {
-        private SyntaxHighlight? _syntax;
+        _syntax = (SyntaxHighlight)plugin.First();
+    }
 
-        public IEnumerable<Type> DependsOn => new[] { typeof(SyntaxHighlight) };
+    public void Setup(SetupInfo info)
+    {
+        if (_syntax is null)
+            throw new InvalidOperationException("SyntaxHighlight requried");
 
-        public void Inject(IEnumerable<IMdAvPlugin> plugin)
-        {
-            _syntax = (SyntaxHighlight)plugin.First();
-        }
+        var _block = new HtmlBlockParser(_syntax, info);
+        var _inline = new HtmlInlineParser(_syntax, info);
 
-        public void Setup(SetupInfo info)
-        {
-            if (_syntax is null)
-                throw new InvalidOperationException("SyntaxHighlight requried");
-
-            var _block = new HtmlBlockParser(_syntax, info);
-            var _inline = new HtmlInlineParser(_syntax, info);
-
-            info.EnableNoteBlock = false;
-            info.RegisterTop(_block);
-            info.Register(_inline);
-        }
+        info.EnableNoteBlock = false;
+        info.RegisterTop(_block);
+        info.Register(_inline);
     }
 }

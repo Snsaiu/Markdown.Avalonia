@@ -1,22 +1,16 @@
-﻿using Avalonia.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
-namespace Markdown.Avalonia.Plugins
+namespace Markdown.Avalonia.Plugins;
+
+public interface IMdAvPlugin
 {
-    public interface IMdAvPlugin
-    {
-        void Setup(SetupInfo info);
-    }
+    void Setup(SetupInfo info);
+}
 
-    public interface IMdAvPluginRequestAnother : IMdAvPlugin
-    {
-        IEnumerable<Type> DependsOn { get; }
+public interface IMdAvPluginRequestAnother : IMdAvPlugin
+{
+    IEnumerable<Type> DependsOn { get; }
 
-        void Inject(IEnumerable<IMdAvPlugin> plugin);
-    }
+    void Inject(IEnumerable<IMdAvPlugin> plugin);
 }

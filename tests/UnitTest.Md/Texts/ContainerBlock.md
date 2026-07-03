@@ -1,29 +1,28 @@
 ﻿::::
 :::cs
 public void Main(){
-    Console.WriteLine(":Hello World:");
+Console.WriteLine(":Hello World:");
 }
 :::
 ::::
 
 :::
 public void Main(){
-    Console.WriteLine(":Hello World:");
+Console.WriteLine(":Hello World:");
 }
 :::
 
 > :::
 > public void Main(){
->     Console.WriteLine(":Hello World:");
+> Console.WriteLine(":Hello World:");
 > }
 > :::
 
-   :::
-   public void Main(){
-       Console.WriteLine(":Hello World:");
-   }
-   :::
-
+:::
+public void Main(){
+Console.WriteLine(":Hello World:");
+}
+:::
 
     :::cs
     public void Main(){
@@ -34,16 +33,8 @@ public void Main(){
 * :::
   public void Main(){
 
-
-
-
-  
-
-
-
-
-  }
-  :::
+}
+:::
 
 * * *
 
@@ -51,16 +42,8 @@ public void Main(){
   :::
   public void Main(){
 
-
-
-
-  
-
-
-
-
-  }
-  :::
+}
+:::
 
 = = =
 
@@ -68,17 +51,9 @@ public void Main(){
 
    :::
    public void Main(){
- 
- 
- 
- 
-   
- 
- 
- 
- 
-   }
-   :::
+
+}
+:::
 
 ===
 
@@ -90,4 +65,5 @@ public void Main(){
 ```cs
 #define FooBar
 ```
+
 :::

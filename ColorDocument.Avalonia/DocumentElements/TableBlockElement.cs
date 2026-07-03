@@ -1,576 +1,522 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Avalonia;
+using Avalonia.Controls;
 
-namespace ColorDocument.Avalonia.DocumentElements
+namespace ColorDocument.Avalonia.DocumentElements;
+
+public class TableBlockElement : DocumentElement
 {
-    public class TableBlockElement : DocumentElement
+    private readonly EnumerableEx<TableCellElement> _all;
+    private readonly bool _autoAdjust;
+    private readonly TableCellElement[][] _body;
+    private readonly TableCellElement[][] _foot;
+    private readonly TableCellElement[][] _head;
+    private readonly Lazy<Border> _table;
+    private SelectionList? _prevSelection;
+
+    public TableBlockElement(
+        IEnumerable<IEnumerable<TableCellElement>> thead,
+        IEnumerable<IEnumerable<TableCellElement>> tbody,
+        IEnumerable<IEnumerable<TableCellElement>> tfoot,
+        bool autoAdjust) :
+        this(
+            thead.Select(ln => ln.ToArray()).ToArray(),
+            tbody.Select(ln => ln.ToArray()).ToArray(),
+            tfoot.Select(ln => ln.ToArray()).ToArray(),
+            autoAdjust)
     {
-        private Lazy<Border> _table;
-        private TableCellElement[][] _head;
-        private TableCellElement[][] _body;
-        private TableCellElement[][] _foot;
-        private bool _autoAdjust;
-        private EnumerableEx<TableCellElement> _all;
-        private SelectionList? _prevSelection;
+    }
 
-        public override Control Control => _table.Value;
-        public override IEnumerable<DocumentElement> Children => _all;
+    public TableBlockElement(
+        TableCellElement[][] thead,
+        TableCellElement[][] tbody,
+        TableCellElement[][] tfoot,
+        bool autoAdjust)
+    {
+        _head = thead;
+        _body = tbody;
+        _foot = tfoot;
 
-        public TableBlockElement(
-            IEnumerable<IEnumerable<TableCellElement>> thead,
-            IEnumerable<IEnumerable<TableCellElement>> tbody,
-            IEnumerable<IEnumerable<TableCellElement>> tfoot,
-            bool autoAdjust) :
-                this(
-                    thead.Select(ln => ln.ToArray()).ToArray(),
-                    tbody.Select(ln => ln.ToArray()).ToArray(),
-                    tfoot.Select(ln => ln.ToArray()).ToArray(),
-                    autoAdjust)
-        { }
+        _all = _head.SelectMany(l => l)
+            .Concat(_body.SelectMany(l => l))
+            .Concat(_foot.SelectMany(l => l))
+            .ToEnumerable();
 
-        public TableBlockElement(
-            TableCellElement[][] thead,
-            TableCellElement[][] tbody,
-            TableCellElement[][] tfoot,
-            bool autoAdjust)
-        {
-            _head = thead;
-            _body = tbody;
-            _foot = tfoot;
+        _autoAdjust = autoAdjust;
 
-            _all = _head.SelectMany(l => l)
-                        .Concat(_body.SelectMany(l => l))
-                        .Concat(_foot.SelectMany(l => l))
-                        .ToEnumerable();
+        _table = new Lazy<Border>(CreateTable);
+    }
 
-            _autoAdjust = autoAdjust;
+    public override Control Control => _table.Value;
+    public override IEnumerable<DocumentElement> Children => _all;
 
-            _table = new Lazy<Border>(CreateTable);
-        }
+    public override void Select(Point from, Point to)
+    {
+        var selection = SelectionUtil.SelectGrid(Control, _all, from, to);
 
-        public override void Select(Point from, Point to)
-        {
-            var selection = SelectionUtil.SelectGrid(Control, _all, from, to);
+        if (_prevSelection is not null)
+            foreach (var ps in _prevSelection)
+                if (!selection.Any(cs => ReferenceEquals(cs, ps)))
+                    ps.UnSelect();
 
-            if (_prevSelection is not null)
+        _prevSelection = selection;
+    }
+
+    public override void UnSelect()
+    {
+        foreach (var child in _all)
+            child.UnSelect();
+    }
+
+    private Border CreateTable()
+    {
+        var rowInfs = new List<RowInf>();
+        CreateRows(rowInfs, _head, ClassNames.TableHeaderClass);
+        CreateRows(rowInfs, _body);
+        CreateRows(rowInfs, _foot, ClassNames.TableFooterClass);
+
+        var maxColCnt = rowInfs.Max(r => r.ColumnCount);
+
+        if (_autoAdjust)
+            for (var i = 0; i < rowInfs.Count; ++i)
             {
-                foreach (var ps in _prevSelection)
-                {
-                    if (!selection.Any(cs => ReferenceEquals(cs, ps)))
-                    {
-                        ps.UnSelect();
-                    }
-                }
-            }
-
-            _prevSelection = selection;
-        }
-
-        public override void UnSelect()
-        {
-            foreach (var child in _all)
-                child.UnSelect();
-        }
-
-        private Border CreateTable()
-        {
-            var rowInfs = new List<RowInf>();
-            CreateRows(rowInfs, _head, ClassNames.TableHeaderClass);
-            CreateRows(rowInfs, _body);
-            CreateRows(rowInfs, _foot, ClassNames.TableFooterClass);
-
-            int maxColCnt = rowInfs.Max(r => r.ColumnCount);
-
-            if (_autoAdjust)
-            {
-                for (int i = 0; i < rowInfs.Count; ++i)
-                {
-                    var rowInf = rowInfs[i];
-                    while (rowInf.ColumnCount < maxColCnt)
-                    {
-                        var cellCtrl = new Border();
-                        Grid.SetRow(cellCtrl, i);
-                        Grid.SetColumn(cellCtrl, rowInf.ColumnCount);
-                        rowInf.Cells.Add(cellCtrl);
-                        rowInf.ColumnCount++;
-                    }
-                }
-            }
-
-            var grid = new Grid();
-            grid.Classes.Add(ClassNames.TableClass);
-
-            grid.RowDefinitions.AddRange(Enumerable.Range(0, rowInfs.Count).Select(_ => new RowDefinition()));
-            grid.ColumnDefinitions.AddRange(Enumerable.Range(0, maxColCnt).Select(_ => new ColumnDefinition()));
-
-            foreach (var rowInf in rowInfs)
-            {
-                foreach (var cell in rowInf.Cells)
-                    cell.Classes.AddRange(rowInf.Classes);
-
-                grid.Children.AddRange(rowInf.Cells);
-            }
-
-            var border = new Border();
-            border.Classes.Add(ClassNames.TableClass);
-            border.Child = grid;
-
-            //var grid = new Grid();
-            //grid.Classes.Add(ClassNames.TableClass);
-            //var border = new Border();
-            //border.Classes.Add(ClassNames.TableClass);
-            //border.Child = grid;
-            //int rowOffset = 0;
-            //
-            //int hRowOffset = rowOffset;
-            //List<RowInfo> hInfs = SetupRow(grid, _head, ref rowOffset, ClassNames.TableHeaderClass);
-            //int bRowOffset = rowOffset;
-            //List<RowInfo> bInfs = SetupRow(grid, _body, ref rowOffset);
-            //int fRowOffset = rowOffset;
-            //List<RowInfo> fInfs = SetupRow(grid, _foot, ref rowOffset, ClassNames.TableFooterClass);
-            //
-            //int colCnt = hInfs.Concat(bInfs).Concat(fInfs).Max(i => i.ColumnCount);
-            //
-            //if (_autoAdjust)
-            //{
-            //    AdjustRow(grid, hInfs, hRowOffset, colCnt);
-            //    AdjustRow(grid, bInfs, bRowOffset, colCnt);
-            //    AdjustRow(grid, fInfs, fRowOffset, colCnt);
-            //}
-            //
-            //foreach (var _ in Enumerable.Range(0, colCnt))
-            //{
-            //    grid.ColumnDefinitions.Add(new ColumnDefinition());
-            //}
-
-            return border;
-        }
-
-        private static List<RowInfo> SetupRow(
-            Grid grid,
-            TableCellElement[][] rows,
-            ref int gridRowIdx,
-            string? classNm = null)
-        {
-            // The list of multi-row cells.
-            // Key: Column index where the target cell is located.
-            var multiRowsAtColIdx = new Dictionary<int, MdSpan>();
-
-            var rowInfs = new List<RowInfo>();
-            var maxColCount = 0;
-
-            int startRowInSection = gridRowIdx;
-            for (var i = 0; i < rows.Length; ++gridRowIdx)
-            {
-                var row = rows[i];
-                grid.RowDefinitions.Add(new RowDefinition());
-
-                // Set up classes for cell in this row.
-                string[] classes;
-                if (classNm is not null)
-                    classes = new[] { classNm };
-                else
-                {
-                    var rowIdxInSection = gridRowIdx - startRowInSection;
-
-                    if (rowIdxInSection == 0)
-                    {
-                        if (i == rows.Length - 1)
-                            classes = new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass, ClassNames.TableLastRowClass };
-                        else
-                            classes = new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass };
-                    }
-                    else
-                    {
-                        var oddOrEven = rowIdxInSection % 2 == 0 ? ClassNames.TableRowOddClass : ClassNames.TableRowEvenClass;
-
-                        if (i == rows.Length - 1)
-                            classes = new[] { oddOrEven, ClassNames.TableLastRowClass };
-                        else
-                            classes = new[] { oddOrEven };
-                    }
-                }
-
-
-                var rowspansColOffset = multiRowsAtColIdx.Sum(e => e.Value.ColSpan);
-
-                /*
-                 * In this row, is space exists to insert cell?
-                 * 
-                 * eg. has space
-                 *    __________________________________
-                 *    | 2x1 cell | 1x1 cell | 1x1 cell |
-                 * -> |          |‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾|
-                 *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-                 *    
-                 * eg. has no space: multi-rows occupy all space in this row.
-                 *    __________________________________
-                 *    | 2x1 cell |      2x2 cell        |
-                 * -> |          |                      |
-                 *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-                 * 
-                 */
-                if (rowspansColOffset == 0 || rowspansColOffset < maxColCount)
-                {
-                    int colIdx = 0;
-                    foreach (var cell in row)
-                    {
-                        while (multiRowsAtColIdx.TryGetValue(colIdx, out var span))
-                        {
-                            colIdx += span.ColSpan;
-                        }
-
-                        var cellCtrl = cell.Control;
-                        cell.Row = gridRowIdx;
-                        cell.Column = colIdx;
-                        Grid.SetRow(cellCtrl, gridRowIdx);
-                        Grid.SetColumn(cellCtrl, colIdx);
-                        if (cell.RowSpan > 1) Grid.SetRowSpan(cellCtrl, cell.RowSpan);
-                        if (cell.ColSpan > 1) Grid.SetColumnSpan(cellCtrl, cell.ColSpan);
-                        cellCtrl.Classes.AddRange(classes);
-                        grid.Children.Add(cellCtrl);
-
-
-                        if (cell.RowSpan > 1)
-                        {
-                            multiRowsAtColIdx[colIdx] =
-                                new MdSpan(cell.RowSpan, cell.ColSpan);
-                        }
-
-                        colIdx += cell.ColSpan;
-                    }
-
-                    rowInfs.Add(new RowInfo(classes, colIdx));
-
-                    if (maxColCount < colIdx) maxColCount = colIdx;
-
-                    ++i;
-                }
-                else
-                {
-                    rowInfs.Add(new RowInfo(classes, rowspansColOffset));
-                }
-
-                // Removes multi-row cells,   複数行にまたがるセルの削除(必要なら)
-                foreach (var spanEntry in multiRowsAtColIdx.ToArray())
-                {
-                    if (--spanEntry.Value.Life == 0)
-                    {
-                        multiRowsAtColIdx.Remove(spanEntry.Key);
-                    }
-                }
-            }
-
-            // if any multirow is left, insert an empty row.
-            while (multiRowsAtColIdx.Count > 0)
-            {
-                grid.RowDefinitions.Add(new RowDefinition());
-
-                var colOffset = 0;
-
-                foreach (var spanEntry in multiRowsAtColIdx.OrderBy(tpl => tpl.Key))
-                {
-                    while (colOffset < spanEntry.Key)
-                    {
-                        var cellCtrl = new Border();
-                        Grid.SetRow(cellCtrl, gridRowIdx);
-                        Grid.SetColumn(cellCtrl, colOffset);
-                        grid.Children.Add(cellCtrl);
-                        colOffset++;
-
-                    }
-                    colOffset += spanEntry.Value.ColSpan;
-
-
-                    if (--spanEntry.Value.Life == 0)
-                    {
-                        multiRowsAtColIdx.Remove(spanEntry.Key);
-                    }
-                }
-
-                rowInfs.Add(new RowInfo(Array.Empty<string>(), colOffset));
-                gridRowIdx++;
-            }
-
-            return rowInfs;
-        }
-
-        private static void AdjustRow(Grid grid, List<RowInfo> rowInfs, int rowOffset, int colCnt)
-        {
-            for (var rowIdx = 0; rowIdx < rowInfs.Count; ++rowIdx)
-            {
-                var rowInf = rowInfs[rowIdx];
-                for (var colIdx = rowInf.ColumnCount; colIdx < colCnt; ++colIdx)
+                var rowInf = rowInfs[i];
+                while (rowInf.ColumnCount < maxColCnt)
                 {
                     var cellCtrl = new Border();
-                    Grid.SetRow(cellCtrl, rowIdx + rowOffset);
-                    Grid.SetColumn(cellCtrl, colIdx);
-                    cellCtrl.Classes.AddRange(rowInf.Classes);
-                    grid.Children.Insert(SearchInsPos(grid.Children, cellCtrl), cellCtrl);
+                    Grid.SetRow(cellCtrl, i);
+                    Grid.SetColumn(cellCtrl, rowInf.ColumnCount);
+                    rowInf.Cells.Add(cellCtrl);
+                    rowInf.ColumnCount++;
                 }
             }
 
-            int SearchInsPos(IList<Control> list, Control tgt)
-            {
-                int min = 0, max = list.Count;
+        var grid = new Grid();
+        grid.Classes.Add(ClassNames.TableClass);
 
-                var tgtRow = Grid.GetRow(tgt);
-                var tgtCol = Grid.GetColumn(tgt);
-                int mid = 0;
+        grid.RowDefinitions.AddRange(Enumerable.Range(0, rowInfs.Count).Select(_ => new RowDefinition()));
+        grid.ColumnDefinitions.AddRange(Enumerable.Range(0, maxColCnt).Select(_ => new ColumnDefinition()));
 
-                while (min < max)
-                {
-                    mid = (min + max) / 2;
+        foreach (var rowInf in rowInfs)
+        {
+            foreach (var cell in rowInf.Cells)
+                cell.Classes.AddRange(rowInf.Classes);
 
-                    var ctrl = list[mid];
-                    var ctrlRow = Grid.GetRow(ctrl);
-                    var ctrlCol = Grid.GetColumn(ctrl);
-
-                    if (tgtRow < ctrlRow || (tgtRow == ctrlRow && tgtCol < ctrlCol))
-                    {
-                        max = mid - 1;
-                    }
-                    else if (tgtRow > ctrlRow || (tgtRow == ctrlRow && tgtCol > ctrlCol))
-                    {
-                        min = mid + 1;
-                    }
-                    else break;
-                }
-
-                for (var i = Math.Min(Math.Min(Math.Min(min, max), mid), list.Count); i < list.Count; ++i)
-                {
-                    var ctrl = list[i];
-                    var ctrlRow = Grid.GetRow(ctrl);
-                    var ctrlCol = Grid.GetColumn(ctrl);
-
-                    if (tgtRow < ctrlRow || (tgtRow == ctrlRow && tgtCol < ctrlCol))
-                    {
-                        return i;
-                    }
-                }
-
-                return list.Count;
-            }
+            grid.Children.AddRange(rowInf.Cells);
         }
 
+        var border = new Border();
+        border.Classes.Add(ClassNames.TableClass);
+        border.Child = grid;
 
-        private void CreateRows(List<RowInf> rowInfs, TableCellElement[][] rows, string? classNm = null)
+        //var grid = new Grid();
+        //grid.Classes.Add(ClassNames.TableClass);
+        //var border = new Border();
+        //border.Classes.Add(ClassNames.TableClass);
+        //border.Child = grid;
+        //int rowOffset = 0;
+        //
+        //int hRowOffset = rowOffset;
+        //List<RowInfo> hInfs = SetupRow(grid, _head, ref rowOffset, ClassNames.TableHeaderClass);
+        //int bRowOffset = rowOffset;
+        //List<RowInfo> bInfs = SetupRow(grid, _body, ref rowOffset);
+        //int fRowOffset = rowOffset;
+        //List<RowInfo> fInfs = SetupRow(grid, _foot, ref rowOffset, ClassNames.TableFooterClass);
+        //
+        //int colCnt = hInfs.Concat(bInfs).Concat(fInfs).Max(i => i.ColumnCount);
+        //
+        //if (_autoAdjust)
+        //{
+        //    AdjustRow(grid, hInfs, hRowOffset, colCnt);
+        //    AdjustRow(grid, bInfs, bRowOffset, colCnt);
+        //    AdjustRow(grid, fInfs, fRowOffset, colCnt);
+        //}
+        //
+        //foreach (var _ in Enumerable.Range(0, colCnt))
+        //{
+        //    grid.ColumnDefinitions.Add(new ColumnDefinition());
+        //}
+
+        return border;
+    }
+
+    private static List<RowInfo> SetupRow(
+        Grid grid,
+        TableCellElement[][] rows,
+        ref int gridRowIdx,
+        string? classNm = null)
+    {
+        // The list of multi-row cells.
+        // Key: Column index where the target cell is located.
+        var multiRowsAtColIdx = new Dictionary<int, MdSpan>();
+
+        var rowInfs = new List<RowInfo>();
+        var maxColCount = 0;
+
+        var startRowInSection = gridRowIdx;
+        for (var i = 0; i < rows.Length; ++gridRowIdx)
         {
-            // The list of multi-row cells.
-            // Key: Column index where the target cell is located.
-            var multiRowsAtColIdx = new Dictionary<int, MdSpan>();
+            var row = rows[i];
+            grid.RowDefinitions.Add(new RowDefinition());
 
-            var maxColCount = 0;
-            int detailsRowIdx = 0;
-            for (int i = 0; i < rows.Length;)
+            // Set up classes for cell in this row.
+            string[] classes;
+            if (classNm is not null)
             {
-                var rinf = new RowInf();
-                SetupClass(rinf, detailsRowIdx++, classNm);
+                classes = new[] { classNm };
+            }
+            else
+            {
+                var rowIdxInSection = gridRowIdx - startRowInSection;
 
-
-                var rowspansColOffset = multiRowsAtColIdx.Sum(e => e.Value.ColSpan);
-                /*
-                 * In this row, is space exists to insert cell?
-                 * 
-                 * eg. has space
-                 *    __________________________________
-                 *    | 2x1 cell | 1x1 cell | 1x1 cell |
-                 * -> |          |‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾|
-                 *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-                 *    
-                 * eg. has no space: multi-rows occupy all space in this row.
-                 *    __________________________________
-                 *    | 2x1 cell |      2x2 cell        |
-                 * -> |          |                      |
-                 *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-                 * 
-                 */
-                if (rowspansColOffset == 0 || rowspansColOffset < maxColCount)
+                if (rowIdxInSection == 0)
                 {
-                    int colIdx = 0;
-                    foreach (var cell in rows[i])
-                    {
-                        while (multiRowsAtColIdx.TryGetValue(colIdx, out var span))
-                        {
-                            colIdx += span.ColSpan;
-                        }
-
-                        var cellCtrl = cell.Control;
-                        cell.Row = rowInfs.Count;
-                        cell.Column = colIdx;
-                        Grid.SetRow(cellCtrl, rowInfs.Count);
-                        Grid.SetColumn(cellCtrl, colIdx);
-                        if (cell.RowSpan > 1) Grid.SetRowSpan(cellCtrl, cell.RowSpan);
-                        if (cell.ColSpan > 1) Grid.SetColumnSpan(cellCtrl, cell.ColSpan);
-                        rinf.Cells.Add(cellCtrl);
-
-
-                        if (cell.RowSpan > 1)
-                        {
-                            multiRowsAtColIdx[colIdx] =
-                                new MdSpan(cell.RowSpan, cell.ColSpan);
-                        }
-
-                        colIdx += cell.ColSpan;
-                    }
-
-
-                    foreach (var left in multiRowsAtColIdx.Where(tpl => tpl.Key >= colIdx)
-                                                          .OrderBy(tpl => tpl.Key))
-                    {
-                        while (colIdx < left.Key)
-                        {
-                            var cellCtrl = new Border();
-                            Grid.SetRow(cellCtrl, rowInfs.Count);
-                            Grid.SetColumn(cellCtrl, colIdx);
-                            rinf.Cells.Add(cellCtrl);
-
-                            ++colIdx;
-                        }
-                        colIdx += left.Value.ColSpan;
-                    }
-
-
-                    rinf.ColumnCount = colIdx;
-                    if (maxColCount < colIdx) maxColCount = colIdx;
-
-
-                    ++i;
+                    if (i == rows.Length - 1)
+                        classes = new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass, ClassNames.TableLastRowClass };
+                    else
+                        classes = new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass };
                 }
                 else
                 {
-                    rinf.ColumnCount = rowspansColOffset;
-                }
+                    var oddOrEven = rowIdxInSection % 2 == 0 ? ClassNames.TableRowOddClass : ClassNames.TableRowEvenClass;
 
-                rowInfs.Add(rinf);
-
-
-                // Removes multi-row cells,   複数行にまたがるセルの削除(必要なら)
-                foreach (var spanEntry in multiRowsAtColIdx.ToArray())
-                {
-                    if (--spanEntry.Value.Life == 0)
-                    {
-                        multiRowsAtColIdx.Remove(spanEntry.Key);
-                    }
+                    if (i == rows.Length - 1)
+                        classes = new[] { oddOrEven, ClassNames.TableLastRowClass };
+                    else
+                        classes = new[] { oddOrEven };
                 }
             }
 
+            var rowspansColOffset = multiRowsAtColIdx.Sum(e => e.Value.ColSpan);
 
-            // if any multirow is left, insert an empty row.
-            while (multiRowsAtColIdx.Count > 0)
+            /*
+             * In this row, is space exists to insert cell?
+             *
+             * eg. has space
+             *    __________________________________
+             *    | 2x1 cell | 1x1 cell | 1x1 cell |
+             * -> |          |‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾|
+             *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+             *
+             * eg. has no space: multi-rows occupy all space in this row.
+             *    __________________________________
+             *    | 2x1 cell |      2x2 cell        |
+             * -> |          |                      |
+             *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+             *
+             */
+            if (rowspansColOffset == 0 || rowspansColOffset < maxColCount)
             {
-                var rinf = new RowInf();
-                SetupClass(rinf, detailsRowIdx++, classNm);
-
                 var colIdx = 0;
-                foreach (var spanEntry in multiRowsAtColIdx.OrderBy(tpl => tpl.Key))
+                foreach (var cell in row)
                 {
-                    while (colIdx < spanEntry.Key)
+                    while (multiRowsAtColIdx.TryGetValue(colIdx, out var span)) colIdx += span.ColSpan;
+
+                    var cellCtrl = cell.Control;
+                    cell.Row = gridRowIdx;
+                    cell.Column = colIdx;
+                    Grid.SetRow(cellCtrl, gridRowIdx);
+                    Grid.SetColumn(cellCtrl, colIdx);
+                    if (cell.RowSpan > 1) Grid.SetRowSpan(cellCtrl, cell.RowSpan);
+                    if (cell.ColSpan > 1) Grid.SetColumnSpan(cellCtrl, cell.ColSpan);
+                    cellCtrl.Classes.AddRange(classes);
+                    grid.Children.Add(cellCtrl);
+
+                    if (cell.RowSpan > 1)
+                        multiRowsAtColIdx[colIdx] =
+                            new MdSpan(cell.RowSpan, cell.ColSpan);
+
+                    colIdx += cell.ColSpan;
+                }
+
+                rowInfs.Add(new RowInfo(classes, colIdx));
+
+                if (maxColCount < colIdx) maxColCount = colIdx;
+
+                ++i;
+            }
+            else
+            {
+                rowInfs.Add(new RowInfo(classes, rowspansColOffset));
+            }
+
+            // Removes multi-row cells,   複数行にまたがるセルの削除(必要なら)
+            foreach (var spanEntry in multiRowsAtColIdx.ToArray())
+                if (--spanEntry.Value.Life == 0)
+                    multiRowsAtColIdx.Remove(spanEntry.Key);
+        }
+
+        // if any multirow is left, insert an empty row.
+        while (multiRowsAtColIdx.Count > 0)
+        {
+            grid.RowDefinitions.Add(new RowDefinition());
+
+            var colOffset = 0;
+
+            foreach (var spanEntry in multiRowsAtColIdx.OrderBy(tpl => tpl.Key))
+            {
+                while (colOffset < spanEntry.Key)
+                {
+                    var cellCtrl = new Border();
+                    Grid.SetRow(cellCtrl, gridRowIdx);
+                    Grid.SetColumn(cellCtrl, colOffset);
+                    grid.Children.Add(cellCtrl);
+                    colOffset++;
+                }
+
+                colOffset += spanEntry.Value.ColSpan;
+
+                if (--spanEntry.Value.Life == 0) multiRowsAtColIdx.Remove(spanEntry.Key);
+            }
+
+            rowInfs.Add(new RowInfo(Array.Empty<string>(), colOffset));
+            gridRowIdx++;
+        }
+
+        return rowInfs;
+    }
+
+    private static void AdjustRow(Grid grid, List<RowInfo> rowInfs, int rowOffset, int colCnt)
+    {
+        for (var rowIdx = 0; rowIdx < rowInfs.Count; ++rowIdx)
+        {
+            var rowInf = rowInfs[rowIdx];
+            for (var colIdx = rowInf.ColumnCount; colIdx < colCnt; ++colIdx)
+            {
+                var cellCtrl = new Border();
+                Grid.SetRow(cellCtrl, rowIdx + rowOffset);
+                Grid.SetColumn(cellCtrl, colIdx);
+                cellCtrl.Classes.AddRange(rowInf.Classes);
+                grid.Children.Insert(SearchInsPos(grid.Children, cellCtrl), cellCtrl);
+            }
+        }
+
+        int SearchInsPos(IList<Control> list, Control tgt)
+        {
+            int min = 0, max = list.Count;
+
+            var tgtRow = Grid.GetRow(tgt);
+            var tgtCol = Grid.GetColumn(tgt);
+            var mid = 0;
+
+            while (min < max)
+            {
+                mid = (min + max) / 2;
+
+                var ctrl = list[mid];
+                var ctrlRow = Grid.GetRow(ctrl);
+                var ctrlCol = Grid.GetColumn(ctrl);
+
+                if (tgtRow < ctrlRow || (tgtRow == ctrlRow && tgtCol < ctrlCol))
+                    max = mid - 1;
+                else if (tgtRow > ctrlRow || (tgtRow == ctrlRow && tgtCol > ctrlCol))
+                    min = mid + 1;
+                else break;
+            }
+
+            for (var i = Math.Min(Math.Min(Math.Min(min, max), mid), list.Count); i < list.Count; ++i)
+            {
+                var ctrl = list[i];
+                var ctrlRow = Grid.GetRow(ctrl);
+                var ctrlCol = Grid.GetColumn(ctrl);
+
+                if (tgtRow < ctrlRow || (tgtRow == ctrlRow && tgtCol < ctrlCol)) return i;
+            }
+
+            return list.Count;
+        }
+    }
+
+    private void CreateRows(List<RowInf> rowInfs, TableCellElement[][] rows, string? classNm = null)
+    {
+        // The list of multi-row cells.
+        // Key: Column index where the target cell is located.
+        var multiRowsAtColIdx = new Dictionary<int, MdSpan>();
+
+        var maxColCount = 0;
+        var detailsRowIdx = 0;
+        for (var i = 0; i < rows.Length;)
+        {
+            var rinf = new RowInf();
+            SetupClass(rinf, detailsRowIdx++, classNm);
+
+            var rowspansColOffset = multiRowsAtColIdx.Sum(e => e.Value.ColSpan);
+            /*
+             * In this row, is space exists to insert cell?
+             *
+             * eg. has space
+             *    __________________________________
+             *    | 2x1 cell | 1x1 cell | 1x1 cell |
+             * -> |          |‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾|
+             *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+             *
+             * eg. has no space: multi-rows occupy all space in this row.
+             *    __________________________________
+             *    | 2x1 cell |      2x2 cell        |
+             * -> |          |                      |
+             *    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+             *
+             */
+            if (rowspansColOffset == 0 || rowspansColOffset < maxColCount)
+            {
+                var colIdx = 0;
+                foreach (var cell in rows[i])
+                {
+                    while (multiRowsAtColIdx.TryGetValue(colIdx, out var span)) colIdx += span.ColSpan;
+
+                    var cellCtrl = cell.Control;
+                    cell.Row = rowInfs.Count;
+                    cell.Column = colIdx;
+                    Grid.SetRow(cellCtrl, rowInfs.Count);
+                    Grid.SetColumn(cellCtrl, colIdx);
+                    if (cell.RowSpan > 1) Grid.SetRowSpan(cellCtrl, cell.RowSpan);
+                    if (cell.ColSpan > 1) Grid.SetColumnSpan(cellCtrl, cell.ColSpan);
+                    rinf.Cells.Add(cellCtrl);
+
+                    if (cell.RowSpan > 1)
+                        multiRowsAtColIdx[colIdx] =
+                            new MdSpan(cell.RowSpan, cell.ColSpan);
+
+                    colIdx += cell.ColSpan;
+                }
+
+                foreach (var left in multiRowsAtColIdx.Where(tpl => tpl.Key >= colIdx)
+                             .OrderBy(tpl => tpl.Key))
+                {
+                    while (colIdx < left.Key)
                     {
                         var cellCtrl = new Border();
                         Grid.SetRow(cellCtrl, rowInfs.Count);
                         Grid.SetColumn(cellCtrl, colIdx);
                         rinf.Cells.Add(cellCtrl);
-                        colIdx++;
-                    }
-                    colIdx += spanEntry.Value.ColSpan;
 
-                    if (--spanEntry.Value.Life == 0)
-                    {
-                        multiRowsAtColIdx.Remove(spanEntry.Key);
+                        ++colIdx;
                     }
+
+                    colIdx += left.Value.ColSpan;
                 }
+
                 rinf.ColumnCount = colIdx;
-                rowInfs.Add(rinf);
+                if (maxColCount < colIdx) maxColCount = colIdx;
+
+                ++i;
             }
-
-
-            if (classNm is null)
+            else
             {
-                rowInfs.Last().Classes.Add(ClassNames.TableLastRowClass);
+                rinf.ColumnCount = rowspansColOffset;
             }
 
+            rowInfs.Add(rinf);
 
-            static void SetupClass(RowInf rinf, int rowIndex, string? classNm)
-            {
-                if (classNm is not null)
-                    rinf.Classes.Add(classNm);
-                else if (rowIndex == 0)
-                    rinf.Classes.AddRange(new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass });
-                else if (rowIndex % 2 == 0)
-                    rinf.Classes.Add(ClassNames.TableRowOddClass);
-                else
-                    rinf.Classes.Add(ClassNames.TableRowEvenClass);
-            }
+            // Removes multi-row cells,   複数行にまたがるセルの削除(必要なら)
+            foreach (var spanEntry in multiRowsAtColIdx.ToArray())
+                if (--spanEntry.Value.Life == 0)
+                    multiRowsAtColIdx.Remove(spanEntry.Key);
         }
 
-        public override void ConstructSelectedText(StringBuilder builder)
+        // if any multirow is left, insert an empty row.
+        while (multiRowsAtColIdx.Count > 0)
         {
-            if (_prevSelection is null)
-                return;
+            var rinf = new RowInf();
+            SetupClass(rinf, detailsRowIdx++, classNm);
 
-            string[,] cellTxt = new string[
-                _all.Max(c => c.Row + c.RowSpan),
-                _all.Max(c => c.Column + c.ColSpan)
-            ];
-
-            foreach (var para in _prevSelection.Cast<TableCellElement>())
+            var colIdx = 0;
+            foreach (var spanEntry in multiRowsAtColIdx.OrderBy(tpl => tpl.Key))
             {
-                cellTxt[para.Row, para.Column] = para.GetSelectedText().TrimEnd().Replace("\r\n", "\r").Replace('\n', '\r');
-            }
-
-            for (int i = 0; i < cellTxt.GetLength(0); i++)
-            {
-                var preLen = builder.Length;
-
-                for (int j = 0; j < cellTxt.GetLength(1); j++)
+                while (colIdx < spanEntry.Key)
                 {
-                    builder.Append(cellTxt[i, j] ?? "");
-                    builder.Append("\t");
+                    var cellCtrl = new Border();
+                    Grid.SetRow(cellCtrl, rowInfs.Count);
+                    Grid.SetColumn(cellCtrl, colIdx);
+                    rinf.Cells.Add(cellCtrl);
+                    colIdx++;
                 }
 
-                if (builder.Length - preLen == 0)
-                    continue;
+                colIdx += spanEntry.Value.ColSpan;
 
-                if (builder[builder.Length - 1] != '\n')
-                    builder.Append('\n');
+                if (--spanEntry.Value.Life == 0) multiRowsAtColIdx.Remove(spanEntry.Key);
             }
+
+            rinf.ColumnCount = colIdx;
+            rowInfs.Add(rinf);
         }
 
-        class MdSpan
-        {
-            public int Life { get; set; }
-            public int ColSpan { get; }
+        if (classNm is null) rowInfs.Last().Classes.Add(ClassNames.TableLastRowClass);
 
-            public MdSpan(int l, int c)
+        static void SetupClass(RowInf rinf, int rowIndex, string? classNm)
+        {
+            if (classNm is not null)
+                rinf.Classes.Add(classNm);
+            else if (rowIndex == 0)
+                rinf.Classes.AddRange(new[] { ClassNames.TableRowOddClass, ClassNames.TableFirstRowClass });
+            else if (rowIndex % 2 == 0)
+                rinf.Classes.Add(ClassNames.TableRowOddClass);
+            else
+                rinf.Classes.Add(ClassNames.TableRowEvenClass);
+        }
+    }
+
+    public override void ConstructSelectedText(StringBuilder builder)
+    {
+        if (_prevSelection is null)
+            return;
+
+        var cellTxt = new string[
+            _all.Max(c => c.Row + c.RowSpan),
+            _all.Max(c => c.Column + c.ColSpan)
+        ];
+
+        foreach (var para in _prevSelection.Cast<TableCellElement>()) cellTxt[para.Row, para.Column] = para.GetSelectedText().TrimEnd().Replace("\r\n", "\r").Replace('\n', '\r');
+
+        for (var i = 0; i < cellTxt.GetLength(0); i++)
+        {
+            var preLen = builder.Length;
+
+            for (var j = 0; j < cellTxt.GetLength(1); j++)
             {
-                Life = l;
-                ColSpan = c;
+                builder.Append(cellTxt[i, j] ?? "");
+                builder.Append("\t");
             }
+
+            if (builder.Length - preLen == 0)
+                continue;
+
+            if (builder[builder.Length - 1] != '\n')
+                builder.Append('\n');
         }
+    }
 
-
-        class RowInf
+    private class MdSpan
+    {
+        public MdSpan(int l, int c)
         {
-            public List<string> Classes { get; } = new List<string>(5);
-            public List<Control> Cells { get; } = new List<Control>();
-            public int ColumnCount;
+            Life = l;
+            ColSpan = c;
         }
 
-        class RowInfo
+        public int Life { get; set; }
+        public int ColSpan { get; }
+    }
+
+    private class RowInf
+    {
+        public int ColumnCount;
+        public List<string> Classes { get; } = new(5);
+        public List<Control> Cells { get; } = new();
+    }
+
+    private class RowInfo
+    {
+        public RowInfo(string[] classes, int colCount)
         {
-            public string[] Classes { get; }
-            public int ColumnCount { get; }
-
-            public RowInfo(string[] classes, int colCount)
-            {
-                Classes = classes;
-                ColumnCount = colCount;
-            }
+            Classes = classes;
+            ColumnCount = colCount;
         }
+
+        public string[] Classes { get; }
+        public int ColumnCount { get; }
     }
 }

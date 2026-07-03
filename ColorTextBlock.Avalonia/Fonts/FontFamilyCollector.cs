@@ -1,31 +1,28 @@
-﻿using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
+using Avalonia.Media;
 
-namespace ColorTextBlock.Avalonia.Fonts
+namespace ColorTextBlock.Avalonia.Fonts;
+
+internal class FontFamilyCollector
 {
-    internal class FontFamilyCollector
+    public static FontFamily? TryGetMonospace()
     {
-        public static FontFamily? TryGetMonospace()
+        string[] RequestFamilies =
         {
-            string[] RequestFamilies = {
-                "menlo",
-                "monaco",
-                "consolas",
-                "droid sans mono",
-                "inconsolata",
-                "courier new",
-                "monospace",
-                "dejavu sans mono",
-            };
+            "menlo",
+            "monaco",
+            "consolas",
+            "droid sans mono",
+            "inconsolata",
+            "courier new",
+            "monospace",
+            "dejavu sans mono"
+        };
 
-            var monospaceName = FontManager.Current.SystemFonts
-                                           .Where(family => RequestFamilies.Any(reqNm => family.Name.ToLower().Contains(reqNm)))
-                                           .FirstOrDefault();
+        var monospaceName = FontManager.Current.SystemFonts
+            .Where(family => RequestFamilies.Any(reqNm => family.Name.ToLower().Contains(reqNm)))
+            .FirstOrDefault();
 
-            return monospaceName;
-        }
+        return monospaceName;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 
+using ReactiveUI.Avalonia;
+
 namespace CustomStyle
 {
     class Program
@@ -14,6 +16,6 @@ namespace CustomStyle
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToDebug();
+                .UseReactiveUI(_ => { });
     }
 }

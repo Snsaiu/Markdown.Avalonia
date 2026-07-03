@@ -1,4 +1,5 @@
 ﻿abcd
+
 ```md
 * one
 * two
@@ -6,6 +7,7 @@
 ```
 
 abcd
+
 * one
   ```md
   ::: plugin
@@ -13,13 +15,14 @@ abcd
   :::
   ```
 * two
-*three
-   * one-two
-   * three four
+  *three
+    * one-two
+    * three four
 
 abcd
 ::: plugin
+
 * one
 * two
 * three
-:::
+  :::

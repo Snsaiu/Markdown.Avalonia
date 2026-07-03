@@ -1,5 +1,4 @@
-﻿
-First we have a simple numeric list
+﻿First we have a simple numeric list
 
 1. Alpha
 1. Beta
@@ -17,68 +16,64 @@ Then we have a simple unordered list
 
 Asterisks tight:
 
-*	asterisk 1
-*	asterisk 2
-*	asterisk 3
-
+* asterisk 1
+* asterisk 2
+* asterisk 3
 
 Asterisks loose:
 
-*	asterisk 1
+* asterisk 1
 
-*	asterisk 2
+* asterisk 2
 
-*	asterisk 3
+* asterisk 3
 
-*	**bold**
+* **bold**
 
-*	*italic*
+* *italic*
 
-*	***bold italic***
+* ***bold italic***
 
 * * *
 
 Pluses tight:
 
-+	Plus 1
-+	Plus 2
-+	Plus 3
-
++ Plus 1
++ Plus 2
++ Plus 3
 
 Pluses loose:
 
-+	Plus 1
++ Plus 1
 
-+	Plus 2
++ Plus 2
 
-+	Plus 3
++ Plus 3
 
 * * *
 
 
 Minuses tight:
 
--	Minus 1
--	Minus 2
--	Minus 3
-
+- Minus 1
+- Minus 2
+- Minus 3
 
 Minuses loose:
 
--	Minus 1
+- Minus 1
 
--	Minus 2
+- Minus 2
 
--	Minus 3
-
+- Minus 3
 
 ## Ordered
 
 Tight:
 
-1.	First
-2.	Second
-3.	Third
+1. First
+2. Second
+3. Third
 
 and:
 
@@ -86,14 +81,13 @@ and:
 2. Two
 3. Three
 
-
 Loose using tabs:
 
-1.	First
+1. First
 
-2.	Second
+2. Second
 
-3.	Third
+3. Third
 
 and using spaces:
 
@@ -105,30 +99,28 @@ and using spaces:
 
 Multiple paragraphs:
 
-1.	Item 1, graf one.
+1. Item 1, graf one.
 
 	Item 2. graf two. The quick brown fox jumped over the lazy dog's
 	back.
-	
-2.	Item 2.
 
-3.	Item 3.
+2. Item 2.
 
-
+3. Item 3.
 
 ## Nested
 
-*	Tab
-	*	Tab
-		*	Tab
+* Tab
+  * Tab
+    * Tab
 
 Here's another:
 
 1. First
 2. Second:
-	* Fee
-	* Fie
-	* Foe
+    * Fee
+    * Fie
+    * Foe
 3. Third
 
 Same thing but with paragraphs:
@@ -136,21 +128,19 @@ Same thing but with paragraphs:
 1. First
 
 2. Second:
-	* Fee
-	* Fie
-	* Foe
+    * Fee
+    * Fie
+    * Foe
 
 3. Third
 
-
 This was an error in Markdown 1.0.1:
 
-*	this
+* this
 
 	*	sub
 
 	that
-
 
 Mixing list
 
@@ -158,18 +148,21 @@ Mixing list
     1. one-one
     1. one-two
        inlist 1
-        inlist 2
-         inline 3
-          inline 4
+       inlist 2
+       inline 3
+       inline 4
 
            as code
 2. two
+
 * three
 * four
+
 + five
 + six
     + seven
 + eight
+
 - eight
 - nine
 
@@ -203,33 +196,53 @@ iiii, one
 
 
 * * *
+
 * one
+
 * * *
+
 * one
+
  * * *
+
 * one
   * * *
 * two
+
 ```
 code
 ```
+
 * three
+
 > quote
+
 * four
+
 # head
+
 * four
+
 ## head
 
 * * *
+
 * one
    * * *
 * two
+
  ```
  code
  ```
+
 * three
- > quote
+
+> quote
+
 * four
- # head
+
+# head
+
 * four
- ## head
+
+## head

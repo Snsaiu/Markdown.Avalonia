@@ -3,15 +3,15 @@
              xmlns:local="clr-namespace:Markdown.AvaloniaFluentDemo"
              x:Class="Markdown.AvaloniaFluentDemo.App"
              RequestedThemeVariant="Light">
-  <Application.DataTemplates>
-    <local:ViewLocator/>
-  </Application.DataTemplates>
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
 
-  <Application.Styles>
-    <!--
+    <Application.Styles>
+        <!--
     <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentDark.xaml"/>
     -->
-    <FluentTheme/>
-    <StyleInclude Source="/Assets/AppendingStyles.axaml"/>
-  </Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="/Assets/AppendingStyles.axaml" />
+    </Application.Styles>
 </Application>

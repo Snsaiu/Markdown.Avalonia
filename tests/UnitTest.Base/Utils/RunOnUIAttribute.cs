@@ -1,63 +1,63 @@
-﻿using Avalonia.Threading;
+﻿using System;
+using Avalonia.Threading;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Commands;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace UnitTest.Base.Utils
+namespace UnitTest.Base.Utils;
+
+[AttributeUsage(AttributeTargets.Method)]
+public sealed class RunOnUIAttribute : Attribute, IWrapTestMethod
 {
-    [System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    public sealed class RunOnUIAttribute : Attribute, IWrapTestMethod
+    public TestCommand Wrap(TestCommand command)
     {
-        public TestCommand Wrap(TestCommand command) => new RunOnUICommand(command);
+        return new RunOnUICommand(command);
+    }
 
-        class RunOnUICommand : DelegatingTestCommand
+    private class RunOnUICommand : DelegatingTestCommand
+    {
+        public RunOnUICommand(TestCommand innerCommand)
+            : base(innerCommand)
         {
-            public RunOnUICommand(TestCommand innerCommand)
-                : base(innerCommand)
+        }
+
+        public override TestResult Execute(TestExecutionContext context)
+        {
+            var dispatcher = Dispatcher.UIThread;
+
+            if (dispatcher.CheckAccess())
             {
+                var result = RunTest(context);
+
+                if (result is Exception ex)
+                    throw ex;
+
+                return (TestResult)result;
             }
-
-            public override TestResult Execute(TestExecutionContext context)
+            else
             {
-                var dispatcher = Dispatcher.UIThread;
+                var resultTask = Dispatcher.UIThread.InvokeAsync(() => RunTest(context));
 
-                if (dispatcher.CheckAccess())
-                {
-                    var result = RunTest(context);
+                if (resultTask.Status != DispatcherOperationStatus.Aborted
+                    && resultTask.Status != DispatcherOperationStatus.Completed)
+                    resultTask.Wait();
 
-                    if (result is Exception ex)
-                        throw ex;
+                if (resultTask.Result is Exception ex)
+                    throw ex;
 
-                    return (TestResult)result;
-                }
-                else
-                {
-                    var resultTask = Dispatcher.UIThread.InvokeAsync<object>(() => RunTest(context));
-
-                    if (resultTask.Status != DispatcherOperationStatus.Aborted
-                     && resultTask.Status != DispatcherOperationStatus.Completed)
-                        resultTask.Wait();
-
-                    if (resultTask.Result is Exception ex)
-                        throw ex;
-
-                    return (TestResult)resultTask.Result;
-                }
+                return (TestResult)resultTask.Result;
             }
+        }
 
-            private object RunTest(TestExecutionContext context)
+        private object RunTest(TestExecutionContext context)
+        {
+            try
             {
-                try
-                {
-                    return innerCommand.Execute(context);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return innerCommand.Execute(context);
+            }
+            catch (Exception e)
+            {
+                return e;
             }
         }
     }

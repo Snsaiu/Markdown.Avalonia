@@ -1,59 +1,49 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
-using Avalonia.Svg;
-using Svg.Model;
-using Avalonia.Media;
-using Markdown.Avalonia.Utils;
 using System.Threading.Tasks;
+using System.Xml;
+using Avalonia.Media;
+using Avalonia.Svg;
+using Markdown.Avalonia.Utils;
 
-namespace Markdown.Avalonia.Svg
+namespace Markdown.Avalonia.Svg;
+
+internal class SvgImageResolver : IImageResolver
 {
-    internal class SvgImageResolver : IImageResolver
+    public async Task<IImage?> Load(Stream stream)
     {
-        private static readonly AvaloniaAssetLoader _svgAssetLoader = new();
-
-        public async Task<IImage?> Load(Stream stream)
+        var task = Task.Run(() =>
         {
-            var task = Task.Run(() =>
-            {
-                if (IsSvgFile(stream))
-                {
-                    var document = SvgExtensions.Open(stream);
-                    var picture = document is { } ? SvgExtensions.ToModel(document, _svgAssetLoader, out _, out _) : default;
-                    var svgsrc = new SvgSource() { Picture = picture };
-                    return (IImage)new VectorImage() { Source = svgsrc };
-                }
+            if (IsSvgFile(stream)) return (IImage)new SvgImage { Source = SvgSource.Load(stream) };
 
-                return null;
-            });
+            return null;
+        });
 
-            return await task;
-        }
+        return await task;
+    }
 
-        private static bool IsSvgFile(Stream fileStream)
+    private static bool IsSvgFile(Stream fileStream)
+    {
+        try
         {
-            try
-            {
-                int firstChr = fileStream.ReadByte();
-                if (firstChr != ('<' & 0xFF))
-                    return false;
-
-                fileStream.Seek(0, SeekOrigin.Begin);
-                using (var xmlReader = XmlReader.Create(fileStream))
-                {
-                    return xmlReader.MoveToContent() == XmlNodeType.Element &&
-                           "svg".Equals(xmlReader.Name, StringComparison.OrdinalIgnoreCase);
-                }
-            }
-            catch
-            {
+            var firstChr = fileStream.ReadByte();
+            if (firstChr != ('<' & 0xFF))
                 return false;
-            }
-            finally
+
+            fileStream.Seek(0, SeekOrigin.Begin);
+            using (var xmlReader = XmlReader.Create(fileStream))
             {
-                fileStream.Seek(0, SeekOrigin.Begin);
+                return xmlReader.MoveToContent() == XmlNodeType.Element &&
+                       "svg".Equals(xmlReader.Name, StringComparison.OrdinalIgnoreCase);
             }
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            fileStream.Seek(0, SeekOrigin.Begin);
         }
     }
 }

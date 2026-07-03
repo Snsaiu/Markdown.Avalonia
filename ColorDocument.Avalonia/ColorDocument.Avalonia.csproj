@@ -1,24 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Markdown.Avalonia.props"/>
-  <PropertyGroup>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <Version>$(PackageVersion)</Version>
-    <Authors>YouYan</Authors>
-    <PackageId>ColorDocument.Avalonia.YouYan</PackageId>
-    <Version>$(PackageVersion)</Version>
-    <Authors>YouYan</Authors>
-    <Copyright>Nanjing Youyan</Copyright>
-    <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia/tree/master/ColorDocument.Avalonia/</PackageProjectUrl>
-    <LangVersion>9</LangVersion>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Nullable>enable</Nullable>
-    <PackageVersion>11.2-a4</PackageVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj"/>
-  </ItemGroup>
+    <Import Project="..\Markdown.Avalonia.props"/>
+    <PropertyGroup>
+        <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+        <Version>$(PackageVersion)</Version>
+        <Authors>YouYan</Authors>
+        <PackageId>ColorDocument.Avalonia.YouYan</PackageId>
+        <Version>$(PackageVersion)</Version>
+        <Authors>YouYan</Authors>
+        <Copyright>Nanjing Youyan</Copyright>
+        <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia/tree/master/ColorDocument.Avalonia/</PackageProjectUrl>
+        <LangVersion>14</LangVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj"/>
+    </ItemGroup>
 </Project>

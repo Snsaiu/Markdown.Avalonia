@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Markdown.Avalonia;
 
-namespace Markdown.Avalonia
+public interface IMarkdownEngineBase
 {
-    public interface IMarkdownEngineBase
-    {
-    }
 }

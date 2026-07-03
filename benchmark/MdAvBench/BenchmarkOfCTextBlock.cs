@@ -1,102 +1,98 @@
-﻿using Avalonia;
-using Avalonia.Media.Imaging;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
-using UnitTest.CTxt.Xamls;
-using MdAvBench.Apps;
+using Avalonia;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using BenchmarkDotNet.Attributes;
+using MdAvBench.Apps;
 using MdAvBench.Xamls;
+using UnitTest.CTxt.Xamls;
 
-namespace MdAvBench
+namespace MdAvBench;
+
+[SimpleJob]
+public class BenchmarkOfCTextBlock
 {
-    [SimpleJob]
-    public class BenchmarkOfCTextBlock
+    private RenderTargetBitmap _bitmapCTB;
+    private RenderTargetBitmap _bitmapTB;
+
+    public BenchmarkOfCTextBlock()
     {
-        private RenderTargetBitmap _bitmapCTB;
-        private RenderTargetBitmap _bitmapTB;
+        App.Start();
 
-        public BenchmarkOfCTextBlock()
+        while (!App.ApplicationStarted)
+            Thread.Sleep(100);
+
+        while (App.MainWindow is null)
+            Thread.Sleep(100);
+
+        Dispatcher.UIThread.Invoke(() =>
         {
-            App.Start();
+            var dpi = new Vector(96, 96);
+            var size = new Size(400, 400);
+            _bitmapCTB = new RenderTargetBitmap(PixelSize.FromSizeWithDpi(size, dpi), dpi);
+            _bitmapTB = new RenderTargetBitmap(PixelSize.FromSizeWithDpi(size, dpi), dpi);
 
-            while (!App.ApplicationStarted)
-                Thread.Sleep(100);
+            App.MainWindow.Width = 400;
+        });
+    }
 
-            while (App.MainWindow is null)
-                Thread.Sleep(100);
+    [Benchmark]
+    public void DispatcherDelay()
+    {
+        Dispatcher.UIThread.Invoke(() => { });
+    }
 
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                var dpi = new Vector(96, 96);
-                var size = new Size(400, 400);
-                _bitmapCTB = new RenderTargetBitmap(PixelSize.FromSizeWithDpi(size, dpi), dpi);
-                _bitmapTB = new RenderTargetBitmap(PixelSize.FromSizeWithDpi(size, dpi), dpi);
+    [Benchmark]
+    public void RenderByCTextBlock()
+    {
+        CTextBlockData? control = null;
 
-                App.MainWindow.Width = 400;
-            });
-        }
-
-        [Benchmark]
-        public void DispatcherDelay()
+        Dispatcher.UIThread.Invoke(() =>
         {
-            Dispatcher.UIThread.Invoke(() => { });
-        }
+            control = new CTextBlockData();
+            App.MainWindow.Content = control;
+        });
 
-        [Benchmark]
-        public void RenderByCTextBlock()
+        while (control is null || !control.IsLoaded) ;
+
+        Dispatcher.UIThread.Invoke(() => { _bitmapCTB.Render(control); });
+    }
+
+    [Benchmark]
+    public void RenderByTextBlock()
+    {
+        TextBlockData? control = null;
+
+        Dispatcher.UIThread.Invoke(() =>
         {
-            CTextBlockData? control = null;
+            control = new TextBlockData();
+            App.MainWindow.Content = control;
+        });
 
-            Dispatcher.UIThread.Invoke(() =>
+        while (control is null || !control.IsLoaded) ;
+
+        Dispatcher.UIThread.Invoke(() => { _bitmapTB.Render(control); });
+    }
+
+    [GlobalCleanup]
+    public void Cleanup()
+    {
+        string path;
+
+        path = $@"D:\debugs\renderingCTB_{DateTime.Now.Ticks}.png";
+        if (!File.Exists(path))
+            using (var strm = File.OpenWrite(path))
             {
-                control = new CTextBlockData();
-                App.MainWindow.Content = control;
-            });
+                _bitmapCTB.Save(strm);
+            }
 
-            while (control is null || !control.IsLoaded) ;
-
-            Dispatcher.UIThread.Invoke(() =>
+        path = $@"D:\debugs\renderingTB_{DateTime.Now.Ticks}.png";
+        if (!File.Exists(path))
+            using (var strm = File.OpenWrite(path))
             {
-                _bitmapCTB.Render(control);
-            });
-        }
-
-        [Benchmark]
-        public void RenderByTextBlock()
-        {
-            TextBlockData? control = null;
-
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                control = new TextBlockData();
-                App.MainWindow.Content = control;
-            });
-
-            while (control is null || !control.IsLoaded) ;
-
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                _bitmapTB.Render(control);
-            });
-        }
-
-        [GlobalCleanup]
-        public void Cleanup()
-        {
-            string path;
-
-            path = $@"D:\debugs\renderingCTB_{DateTime.Now.Ticks}.png";
-            if (!File.Exists(path))
-                using (var strm = File.OpenWrite(path))
-                    _bitmapCTB.Save(strm);
-
-            path = $@"D:\debugs\renderingTB_{DateTime.Now.Ticks}.png";
-            if (!File.Exists(path))
-                using (var strm = File.OpenWrite(path))
-                    _bitmapTB.Save(strm);
-        }
+                _bitmapTB.Save(strm);
+            }
     }
 }

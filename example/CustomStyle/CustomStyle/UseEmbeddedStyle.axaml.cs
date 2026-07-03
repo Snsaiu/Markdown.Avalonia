@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace CustomStyle
 {
-    public class UseEmbeddedStyle : UserControl
+    public partial class UseEmbeddedStyle : UserControl
     {
         public UseEmbeddedStyle()
         {

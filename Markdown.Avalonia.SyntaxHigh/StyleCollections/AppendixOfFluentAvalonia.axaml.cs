@@ -1,16 +1,12 @@
 ﻿using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Markdown.Avalonia.SyntaxHigh.StyleCollections
+namespace Markdown.Avalonia.SyntaxHigh.StyleCollections;
+
+public class AppendixOfFluentAvalonia : Styles
 {
-    public class AppendixOfFluentAvalonia : Styles
+    public AppendixOfFluentAvalonia()
     {
-        public AppendixOfFluentAvalonia()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        AvaloniaXamlLoader.Load(this);
     }
 }

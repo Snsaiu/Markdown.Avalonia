@@ -1,56 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Markdown.Avalonia.props"/>
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>Markdown.Avalonia.Tight.YouYan</PackageId>
-    <AssemblyName>Markdown.Avalonia</AssemblyName>
-    <RootNamespace>Markdown.Avalonia</RootNamespace>
-    <Version>$(PackageVersion)</Version>
-    <Authors>YouYan</Authors>
-    <Company/>
-    <Description>Markdown Controls for Avalonia</Description>
-    <Copyright>Nanjing Youyan</Copyright>
-    <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>Markdown.Avalonia.Tight.md</PackageReadmeFile>
-    <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
-    <Configurations>Debug;Release</Configurations>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
-    <PackageVersion>11.2-a4</PackageVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\pack_readme\Markdown.Avalonia.Tight.md" Pack="true" PackagePath="\"/>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
-    <PackageReference Include="CSharpMath.SkiaSharp" Version="0.5.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Assets\ImageNotFound.bmp"/>
-    <None Remove="EmojiTable.txt"/>
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Assets\ImageNotFound.bmp"/>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="EmojiTable.txt"/>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ColorDocument.Avalonia\ColorDocument.Avalonia.csproj"/>
-    <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj"/>
-  </ItemGroup>
-  <ItemGroup Condition=" &apos;$(TargetFramework)&apos; == &apos;net45&apos; ">
-    <Reference Include="System.Net.Http"/>
-  </ItemGroup><!-- see https://stackoverflow.com/questions/41979310/including-referenced-project-dlls-in-nuget-package-net-core-rc3-csproj-file
-  <PropertyGroup>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-  </PropertyGroup>
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+    <Import Project="..\Markdown.Avalonia.props"/>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+        <PackageId>Markdown.Avalonia.Tight.YouYan</PackageId>
+        <AssemblyName>Markdown.Avalonia</AssemblyName>
+        <RootNamespace>Markdown.Avalonia</RootNamespace>
+        <Version>$(PackageVersion)</Version>
+        <Authors>YouYan</Authors>
+        <Company/>
+        <Description>Markdown Controls for Avalonia</Description>
+        <Copyright>Nanjing Youyan</Copyright>
+        <PackageProjectUrl>https://github.com/Snsaiu/Markdown.Avalonia.git</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>Markdown.Avalonia.Tight.md</PackageReadmeFile>
+        <PackageTags>Markdown Avalonia Avaloniaui</PackageTags>
+        <Configurations>Debug;Release</Configurations>
+        <LangVersion>14</LangVersion>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+        <None Include="..\pack_readme\Markdown.Avalonia.Tight.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
-  </Target> -->
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="CSharpMath.SkiaSharp" Version="1.0.0-pre.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Assets\ImageNotFound.bmp"/>
+        <None Remove="EmojiTable.txt"/>
+    </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\ImageNotFound.bmp"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="EmojiTable.txt"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ColorDocument.Avalonia\ColorDocument.Avalonia.csproj"/>
+        <ProjectReference Include="..\ColorTextBlock.Avalonia\ColorTextBlock.Avalonia.csproj"/>
+    </ItemGroup>
+    <!-- see https://stackoverflow.com/questions/41979310/including-referenced-project-dlls-in-nuget-package-net-core-rc3-csproj-file
+    <PropertyGroup>
+      <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    </PropertyGroup>
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+      <ItemGroup>
+        <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      </ItemGroup>
+    </Target> -->
 </Project>

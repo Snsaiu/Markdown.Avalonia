@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace HowToUse
 {
-    public class WriteMarkdownInXaml : UserControl
+    public partial class WriteMarkdownInXaml : UserControl
     {
         public WriteMarkdownInXaml()
         {

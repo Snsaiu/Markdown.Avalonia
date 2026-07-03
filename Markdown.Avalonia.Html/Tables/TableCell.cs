@@ -1,51 +1,48 @@
-﻿using System;
-using System.Text;
-using Avalonia.Media;
-using Avalonia.Layout;
-using System.Collections.Generic;
-using Avalonia.Controls;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Layout;
+using Avalonia.Media;
 
-namespace Markdown.Avalonia.Html.Tables
+namespace Markdown.Avalonia.Html.Tables;
+
+internal class TableCell
 {
-    class TableCell
+    public TableCell()
     {
-        public int ColumnIndex { set; get; }
+        RowSpan = 1;
+        ColSpan = 1;
+        Horizontal = null;
+        Vertical = null;
+        Content = new Border();
+    }
 
-        public Border Content { get; set; }
-        public int RowSpan { set; get; }
-        public int ColSpan { set; get; }
-        public TextAlignment? Horizontal { set; get; }
-        public VerticalAlignment? Vertical { set; get; }
-
-        public TableCell()
+    public TableCell(IEnumerable<Control> controls) : this()
+    {
+        var ctrls = controls.ToArray();
+        switch (ctrls.Length)
         {
-            RowSpan = 1;
-            ColSpan = 1;
-            Horizontal = null;
-            Vertical = null;
-            Content = new();
-        }
+            case 0:
+                break;
 
-        public TableCell(IEnumerable<Control> controls) : this()
-        {
-            var ctrls = controls.ToArray();
-            switch (ctrls.Length)
-            {
-                case 0:
-                    break;
+            case 1:
+                Content.Child = ctrls[0];
+                break;
 
-                case 1:
-                    Content.Child = ctrls[0];
-                    break;
+            default:
+                var panel = new StackPanel { Orientation = Orientation.Vertical };
+                panel.Children.AddRange(ctrls);
 
-                default:
-                    var panel = new StackPanel() { Orientation = Orientation.Vertical };
-                    panel.Children.AddRange(ctrls);
-
-                    Content.Child = panel;
-                    break;
-            }
+                Content.Child = panel;
+                break;
         }
     }
+
+    public int ColumnIndex { get; set; }
+
+    public Border Content { get; set; }
+    public int RowSpan { get; set; }
+    public int ColSpan { get; set; }
+    public TextAlignment? Horizontal { get; set; }
+    public VerticalAlignment? Vertical { get; set; }
 }

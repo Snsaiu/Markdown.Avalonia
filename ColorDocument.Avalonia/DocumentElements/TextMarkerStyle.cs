@@ -1,60 +1,59 @@
-﻿using Markdown.Avalonia;
-using System;
+﻿using System;
+using Markdown.Avalonia;
 
-namespace ColorDocument.Avalonia.DocumentElements
+namespace ColorDocument.Avalonia.DocumentElements;
+
+public enum TextMarkerStyle
 {
-    public enum TextMarkerStyle
+    Box,
+    Circle,
+    Decimal,
+    Disc,
+
+    LowerLatin,
+    LowerRoman,
+
+    UpperLatin,
+    UpperRoman,
+
+    Square
+}
+
+public static class MarkdownStyleExt
+{
+    public static string CreateMakerText(this TextMarkerStyle textMarker, int index)
     {
-        Box,
-        Circle,
-        Decimal,
-        Disc,
-
-        LowerLatin,
-        LowerRoman,
-
-        UpperLatin,
-        UpperRoman,
-
-        Square,
-    }
-
-    public static class MarkdownStyleExt
-    {
-        public static string CreateMakerText(this TextMarkerStyle textMarker, int index)
+        switch (textMarker)
         {
-            switch (textMarker)
-            {
-                default:
-                    throw new InvalidOperationException("sorry library manager forget to modify about listmerker.");
+            default:
+                throw new InvalidOperationException("sorry library manager forget to modify about listmerker.");
 
-                case TextMarkerStyle.Disc:
-                    return "•";
+            case TextMarkerStyle.Disc:
+                return "•";
 
-                case TextMarkerStyle.Box:
-                    return "▪";
+            case TextMarkerStyle.Box:
+                return "▪";
 
-                case TextMarkerStyle.Circle:
-                    return "○";
+            case TextMarkerStyle.Circle:
+                return "○";
 
-                case TextMarkerStyle.Square:
-                    return "❏";
+            case TextMarkerStyle.Square:
+                return "❏";
 
-                case TextMarkerStyle.Decimal:
-                    return (index + 1).ToString() + ".";
+            case TextMarkerStyle.Decimal:
+                return (index + 1) + ".";
 
-                case TextMarkerStyle.LowerLatin:
-                    return NumberToOrder.ToLatin(index + 1).ToLower() + ".";
+            case TextMarkerStyle.LowerLatin:
+                return NumberToOrder.ToLatin(index + 1).ToLower() + ".";
 
-                case TextMarkerStyle.UpperLatin:
-                    return NumberToOrder.ToLatin(index + 1) + ".";
+            case TextMarkerStyle.UpperLatin:
+                return NumberToOrder.ToLatin(index + 1) + ".";
 
-                case TextMarkerStyle.LowerRoman:
-                    return NumberToOrder.ToRoman(index + 1).ToLower() + ".";
+            case TextMarkerStyle.LowerRoman:
+                return NumberToOrder.ToRoman(index + 1).ToLower() + ".";
 
-                case TextMarkerStyle.UpperRoman:
-                    return NumberToOrder.ToRoman(index + 1) + ".";
-            }
+            case TextMarkerStyle.UpperRoman:
+                return NumberToOrder.ToRoman(index + 1) + ".";
         }
     }
 }

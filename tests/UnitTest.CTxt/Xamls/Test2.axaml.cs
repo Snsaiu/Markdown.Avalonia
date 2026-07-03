@@ -1,19 +1,17 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace UnitTest.CTxt.Xamls
-{
-    public partial class Test2 : UserControl
-    {
-        public Test2()
-        {
-            this.InitializeComponent();
-        }
+namespace UnitTest.CTxt.Xamls;
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+public partial class Test2 : UserControl
+{
+    public Test2()
+    {
+        InitializeComponent();
+    }
+
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

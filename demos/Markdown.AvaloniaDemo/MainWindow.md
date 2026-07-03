@@ -1,17 +1,23 @@
-﻿好的，这里提供一个封装了 NPOI 工作表顺序设置功能的 C# 类。这个类会处理工作簿的打开、创建、添加工作表、设置顺序以及保存。它还实现了 `IDisposable` 接口，以确保资源被正确释放。
+﻿好的，这里提供一个封装了 NPOI 工作表顺序设置功能的 C# 类。这个类会处理工作簿的打开、创建、添加工作表、设置顺序以及保存。它还实现了
+`IDisposable` 接口，以确保资源被正确释放。
 $$
 \int_0^1 \frac{1}{1 + x^2} \, dx = \arctan(1) - \arctan(0) = \frac{\pi}{4}
 $$
 
-
 ### Link ###
-Links [Go to Google!](https://www.google.com)  
-Links with title [Go to Google!](https://www.google.com "google.")  
-Links with image [![faviicon](https://www.google.com/favicon.ico)](https://www.google.com "google favicon")
 
-![localimage](LocalPath.png)
-![ResourceImage](Assets/ResourceImage.png)
-![Svg](Assets/Vector.svg)
+[//]: # (Links [Go to Google!]&#40;https://www.google.com&#41;  )
+
+[//]: # (Links with title [Go to Google!]&#40;https://www.google.com "google."&#41;  )
+
+[//]: # (Links with image [![faviicon]&#40;https://www.google.com/favicon.ico&#41;]&#40;https://www.google.com "google favicon"&#41;)
+
+[//]: # ()
+[//]: # (![localimage]&#40;LocalPath.png&#41;)
+
+[//]: # (![ResourceImage]&#40;Assets/ResourceImage.png&#41;)
+
+[//]: # (![Svg]&#40;Assets/Vector.svg&#41;)
 
 $$
 \int_0^1 x^2 \, dx = \frac{1}{3}
@@ -53,42 +59,56 @@ $$
 
 希腊字母：$\alpha + \beta = \gamma$。
 
-
-
 ### Text decolation [included original enhance] ###
+
 *italic*, **bold**, ***bold-italic***, ~~strikethrough~~, __underline__ and %{color:red}color%.  
 %{color:blue}***~~__Mixing Text__~~***%
 
 ### Link ###
-Links [Go to Google!](https://www.google.com)  
-Links with title [Go to Google!](https://www.google.com "google.")  
-Links with image [![faviicon](https://www.google.com/favicon.ico)](https://www.google.com "google favicon")
+
+[//]: # (Links [Go to Google!]&#40;https://www.google.com&#41;  )
+
+[//]: # (Links with title [Go to Google!]&#40;https://www.google.com "google."&#41;  )
+
+[//]: # (Links with image [![faviicon]&#40;https://www.google.com/favicon.ico&#41;]&#40;https://www.google.com "google favicon"&#41;)
 
 ### Image ###
+
 #### Remote images ####
+
 ![image1](https://github.com/whistyun/Markdown.Avalonia/raw/master/docs/img.demo/scrn1.png)
+
 #### Local and resource images ####
+
 ![localimage](LocalPath.png)
 ![ResourceImage](Assets/ResourceImage.png)
-![Svg](Assets/Vector.svg)
+
+[//]: # (![Svg]&#40;Assets/Vector.svg&#41;)
 
 ### List ###
+
 #### ul
+
 * one
 * two
 
 #### ol
+
 1. one
 2. two
+
 #### alphabet-ol [original enhance]
+
 a. one
 b. two
 
 #### roman-ol [original enhance]
+
 i, one
 ii, two
 
 ### Table [included original enhance] ###
+
 |a|b|c|d|
 |:-:|:-|-:|
 |a1234567890|b1234567890|c1234567890|d1234567890|
@@ -98,7 +118,9 @@ ii, two
 |あ|い|う|え|
 
 ### Code ###
+
 Markdown.Xaml support ```inline code ``` and block code.
+
 ```c
 #include <stdio.h>
 int main()
@@ -115,8 +137,8 @@ int main()
 
 <p>. notetext
 
-
 ### Separator ###
+
 single line
 ---
 two lines
@@ -127,6 +149,7 @@ bold with single
 ___
 
 ### Blockquote ###
+
 > ## Features ##
 > MarkDown.Xaml has a number of convenient features
 >
@@ -135,13 +158,13 @@ ___
 > * Includes a `TextToFlowDocumentConverter` to make it easy to bind Markdown text
 
 ### Text Alignment [original enhance] ###
+
 MdXaml parse a head of paragraph. If 'p[<=>].' is found, apply text alignment to it.
 > p<. left alignment text
 >
 > p>. right alignment text
 >
 > p=. center alignment
-
 
 ## What is this Demo? ##
 

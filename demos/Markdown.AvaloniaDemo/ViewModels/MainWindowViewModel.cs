@@ -1,92 +1,97 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml.Styling;
-using Avalonia.Platform;
-using Avalonia.Styling;
-using Avalonia.Themes.Simple;
-using Markdown.Avalonia;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using Avalonia.Platform;
+using Markdown.Avalonia;
+using ReactiveUI;
 
-namespace Markdown.AvaloniaDemo.ViewModels
+namespace Markdown.AvaloniaDemo.ViewModels;
+
+public class MainWindowViewModel : ViewModelBase
 {
-    public class MainWindowViewModel : ViewModelBase
+    private string _appendStyleXamlText;
+
+    private string _edittingStyleXamlText;
+
+    private string _ErrorInfo;
+
+    private StyleViewModel _selectedStyle;
+    private string _text;
+
+    public MainWindowViewModel()
     {
-        private string _text;
-        public string Text
+        try
         {
-            get => _text;
-            set => this.RaiseAndSetIfChanged(ref _text, value);
-        }
-
-        private string _edittingStyleXamlText;
-        public string EdittingStyleXamlText
-        {
-            get => _edittingStyleXamlText;
-            set => this.RaiseAndSetIfChanged(ref _edittingStyleXamlText, value);
-        }
-
-        private string _appendStyleXamlText;
-        public string AppendStyleXamlText
-        {
-            get => _appendStyleXamlText;
-            set => this.RaiseAndSetIfChanged(ref _appendStyleXamlText, value);
-        }
-
-        private StyleViewModel _selectedStyle;
-        public StyleViewModel SelectedStyle
-        {
-            get => _selectedStyle;
-            set => this.RaiseAndSetIfChanged(ref _selectedStyle, value);
-        }
-
-        private string _ErrorInfo;
-        public string ErrorInfo
-        {
-            get => _ErrorInfo;
-            set => this.RaiseAndSetIfChanged(ref _ErrorInfo, value);
-        }
-
-        public List<StyleViewModel> Styles { set; get; }
-
-        public void XamlParseResult(string result) => ErrorInfo = result;
-
-        public void TryParse() => AppendStyleXamlText = EdittingStyleXamlText;
-
-        public MainWindowViewModel()
-        {
-            try
+            using (var stream = new FileStream("MainWindow.md", FileMode.Open))
+            using (var reader = new StreamReader(stream))
             {
-                using (var stream = new FileStream("MainWindow.md", FileMode.Open))
-                using (var reader = new StreamReader(stream))
-                {
-                    Text = reader.ReadToEnd();
-                }
+                Text = reader.ReadToEnd();
             }
-            catch { }
+        }
+        catch
+        {
+        }
 
-            Styles = new List<StyleViewModel>
-            {
-                new StyleViewModel() { Name = nameof(MarkdownStyle.Standard) },
-                new StyleViewModel() { Name = nameof(MarkdownStyle.SimpleTheme) },
-                new StyleViewModel() { Name = nameof(MarkdownStyle.GithubLike) }
-            };
+        Styles = new List<StyleViewModel>
+        {
+            new() { Name = nameof(MarkdownStyle.Standard) },
+            new() { Name = nameof(MarkdownStyle.SimpleTheme) },
+            new() { Name = nameof(MarkdownStyle.GithubLike) }
+        };
 
-            SelectedStyle = Styles[1];
+        SelectedStyle = Styles[1];
 
-            using (var strm = AssetLoader.Open(new Uri("avares://Markdown.AvaloniaDemo/Assets/XamlTemplate.txt")))
-            using (var reader = new StreamReader(strm))
-            {
-                EdittingStyleXamlText = reader.ReadToEnd();
-            }
+        using (var strm = AssetLoader.Open(new Uri("avares://Markdown.AvaloniaDemo/Assets/XamlTemplate.txt")))
+        using (var reader = new StreamReader(strm))
+        {
+            EdittingStyleXamlText = reader.ReadToEnd();
         }
     }
 
-    public class StyleViewModel
+    public string Text
     {
-        public string Name { get; set; }
+        get => _text;
+        set => this.RaiseAndSetIfChanged(ref _text, value);
     }
+
+    public string EdittingStyleXamlText
+    {
+        get => _edittingStyleXamlText;
+        set => this.RaiseAndSetIfChanged(ref _edittingStyleXamlText, value);
+    }
+
+    public string AppendStyleXamlText
+    {
+        get => _appendStyleXamlText;
+        set => this.RaiseAndSetIfChanged(ref _appendStyleXamlText, value);
+    }
+
+    public StyleViewModel SelectedStyle
+    {
+        get => _selectedStyle;
+        set => this.RaiseAndSetIfChanged(ref _selectedStyle, value);
+    }
+
+    public string ErrorInfo
+    {
+        get => _ErrorInfo;
+        set => this.RaiseAndSetIfChanged(ref _ErrorInfo, value);
+    }
+
+    public List<StyleViewModel> Styles { get; set; }
+
+    public void XamlParseResult(string result)
+    {
+        ErrorInfo = result;
+    }
+
+    public void TryParse()
+    {
+        AppendStyleXamlText = EdittingStyleXamlText;
+    }
+}
+
+public class StyleViewModel
+{
+    public string Name { get; set; }
 }

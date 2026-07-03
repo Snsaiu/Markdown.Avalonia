@@ -1,4 +1,4 @@
-﻿alphabet:  
+﻿alphabet:
 
 a. foobar
 a. foobar

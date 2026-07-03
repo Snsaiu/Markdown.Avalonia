@@ -1,61 +1,59 @@
-﻿using Avalonia;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
-using ColorTextBlock.Avalonia;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ColorDocument.Avalonia.DocumentElements
+namespace ColorDocument.Avalonia.DocumentElements;
+
+public class PlainCodeBlockElement : DocumentElement
 {
-    public class PlainCodeBlockElement : DocumentElement
+    private readonly Lazy<Border> _border;
+    private readonly string _code;
+
+    public PlainCodeBlockElement(string code)
     {
-        private string _code;
-        private Lazy<Border> _border;
+        _code = code;
+        _border = new Lazy<Border>(CreateBlock);
+    }
 
-        public override Control Control => _border.Value;
+    public override Control Control => _border.Value;
 
-        public override IEnumerable<DocumentElement> Children => Array.Empty<DocumentElement>();
+    public override IEnumerable<DocumentElement> Children => Array.Empty<DocumentElement>();
 
-        public PlainCodeBlockElement(string code)
+    public override void Select(Point from, Point to)
+    {
+    }
+
+    public override void UnSelect()
+    {
+    }
+
+    public Border CreateBlock()
+    {
+        var ctxt = new TextBlock
         {
-            _code = code;
-            _border = new Lazy<Border>(CreateBlock);
-        }
+            Text = _code,
+            TextWrapping = TextWrapping.NoWrap
+        };
+        ctxt.Classes.Add(ClassNames.CodeBlockClass);
 
-        public override void Select(Point from, Point to)
-        {
-        }
+        var scrl = new ScrollViewer();
+        scrl.Classes.Add(ClassNames.CodeBlockClass);
+        scrl.Content = ctxt;
+        scrl.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-        public override void UnSelect()
-        {
-        }
+        var result = new Border();
+        result.Classes.Add(ClassNames.CodeBlockClass);
+        result.Child = scrl;
 
-        public Border CreateBlock()
-        {
-            var ctxt = new TextBlock()
-            {
-                Text = _code,
-                TextWrapping = TextWrapping.NoWrap
-            };
-            ctxt.Classes.Add(ClassNames.CodeBlockClass);
+        return result;
+    }
 
-            var scrl = new ScrollViewer();
-            scrl.Classes.Add(ClassNames.CodeBlockClass);
-            scrl.Content = ctxt;
-            scrl.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-            var result = new Border();
-            result.Classes.Add(ClassNames.CodeBlockClass);
-            result.Child = scrl;
-
-            return result;
-        }
-
-        public override void ConstructSelectedText(StringBuilder stringBuilder)
-        {
-            stringBuilder.Append(_code);
-        }
+    public override void ConstructSelectedText(StringBuilder stringBuilder)
+    {
+        stringBuilder.Append(_code);
     }
 }

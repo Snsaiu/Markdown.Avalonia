@@ -1,28 +1,28 @@
-﻿using ColorDocument.Avalonia;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using ColorDocument.Avalonia;
 
-namespace Markdown.Avalonia.Parsers.Builtin
+namespace Markdown.Avalonia.Parsers.Builtin;
+
+internal class CommonListParser : AbstractListParser
 {
-    internal class CommonListParser : AbstractListParser
+    private const string _commonListMaker = @"(?:[*+-]|\d+[.])";
+
+    private static readonly Regex _commonListNested = CreateWholeListPattern(_commonListMaker, _commonListMaker);
+
+    public CommonListParser() : base(_commonListNested)
     {
-        private const string _commonListMaker = @"(?:[*+-]|\d+[.])";
+    }
 
-        private static readonly Regex _commonListNested = CreateWholeListPattern(_commonListMaker, _commonListMaker);
-
-        public CommonListParser() : base(_commonListNested)
+    public override IEnumerable<DocumentElement>? Convert2(
+        string text, Match firstMatch,
+        ParseStatus status,
+        IMarkdownEngine2 engine,
+        out int parseTextBegin, out int parseTextEnd)
+    {
+        return new DocumentElement[]
         {
-        }
-
-        public override IEnumerable<DocumentElement>? Convert2(
-            string text, Match firstMatch,
-            ParseStatus status,
-            IMarkdownEngine2 engine,
-            out int parseTextBegin, out int parseTextEnd)
-        {
-            return new DocumentElement[] {
-                ListEvalutor(text, firstMatch, _commonListMaker, engine, out parseTextBegin, out parseTextEnd)
-            };
-        }
+            ListEvalutor(text, firstMatch, _commonListMaker, engine, out parseTextBegin, out parseTextEnd)
+        };
     }
 }

@@ -1,25 +1,23 @@
-using ApprovalTests.Namers;
 using System.IO;
+using ApprovalTests.Namers;
 
-namespace UnitTest.Base
+namespace UnitTest.Base;
+
+public class ChangeOutputPathNamer : UnitTestFrameworkNamer
 {
-    public class ChangeOutputPathNamer : UnitTestFrameworkNamer
+    private readonly string dir;
+
+    public ChangeOutputPathNamer(string dir)
     {
-        private string dir;
+        this.dir = dir;
+    }
 
-
-        public override string SourcePath
+    public override string SourcePath
+    {
+        get
         {
-            get
-            {
-                var basePath = base.SourcePath;
-                return Path.Combine(basePath, dir);
-            }
-        }
-
-        public ChangeOutputPathNamer(string dir)
-        {
-            this.dir = dir;
+            var basePath = base.SourcePath;
+            return Path.Combine(basePath, dir);
         }
     }
 }

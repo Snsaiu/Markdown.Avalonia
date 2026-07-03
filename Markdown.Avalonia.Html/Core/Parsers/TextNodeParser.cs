@@ -1,38 +1,36 @@
-﻿using Avalonia;
-using Avalonia.Controls.Documents;
+﻿using System.Collections.Generic;
+using Avalonia;
 using ColorTextBlock.Avalonia;
 using HtmlAgilityPack;
 using Markdown.Avalonia.Html.Core.Utils;
-using System.Collections.Generic;
 
-namespace Markdown.Avalonia.Html.Core.Parsers
+namespace Markdown.Avalonia.Html.Core.Parsers;
+
+public class TextNodeParser : IInlineTagParser
 {
-    public class TextNodeParser : IInlineTagParser
+    public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameText };
+
+    bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<StyledElement> generated)
     {
-        public IEnumerable<string> SupportTag => new[] { HtmlNode.HtmlNodeTypeNameText };
+        var rtn = TryReplace(node, manager, out var list);
+        generated = list;
+        return rtn;
+    }
 
-        bool ITagParser.TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<StyledElement> generated)
+    public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<CInline> generated)
+    {
+        if (node is HtmlTextNode textNode)
         {
-            var rtn = TryReplace(node, manager, out var list);
-            generated = list;
-            return rtn;
+            generated = Replace(textNode.Text, manager);
+            return true;
         }
 
-        public bool TryReplace(HtmlNode node, ReplaceManager manager, out IEnumerable<CInline> generated)
-        {
-            if (node is HtmlTextNode textNode)
-            {
-                generated = Replace(textNode.Text, manager);
-                return true;
-            }
+        generated = EnumerableExt.Empty<CInline>();
+        return false;
+    }
 
-            generated = EnumerableExt.Empty<CInline>();
-            return false;
-        }
-
-        public IEnumerable<CInline> Replace(string text, ReplaceManager manager)
-            => text.StartsWith("\n") ?
-                    new[] { new CRun() { Text = text.Replace('\n', ' ') } } :
-                    manager.Engine.RunSpanGamut(text.Replace('\n', ' '));
+    public IEnumerable<CInline> Replace(string text, ReplaceManager manager)
+    {
+        return text.StartsWith("\n") ? new[] { new CRun { Text = text.Replace('\n', ' ') } } : manager.Engine.RunSpanGamut(text.Replace('\n', ' '));
     }
 }

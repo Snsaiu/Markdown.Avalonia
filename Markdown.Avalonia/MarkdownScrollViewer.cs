@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Markdown.Avalonia.Full;
 
-namespace Markdown.Avalonia.Full
+public class MarkdownScrollViewer : Avalonia.MarkdownScrollViewer
 {
-    public class MarkdownScrollViewer : global::Markdown.Avalonia.MarkdownScrollViewer
+    public MarkdownScrollViewer()
     {
-
-        public MarkdownScrollViewer()
-        {
-            Plugins = new MdAvPlugins();
-        }
+        Plugins = new MdAvPlugins();
     }
 }

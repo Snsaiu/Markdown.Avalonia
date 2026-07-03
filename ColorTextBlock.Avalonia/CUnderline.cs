@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace ColorTextBlock.Avalonia
-{
-    /// <summary>
-    /// Underline decoration
-    /// </summary>
-    public class CUnderline : CSpan
-    {
-        public CUnderline() { }
+namespace ColorTextBlock.Avalonia;
 
-        public CUnderline(IEnumerable<CInline> inlines) : base(inlines)
-        {
-            IsUnderline = true;
-        }
+/// <summary>
+///     Underline decoration
+/// </summary>
+public class CUnderline : CSpan
+{
+    public CUnderline()
+    {
+    }
+
+    public CUnderline(IEnumerable<CInline> inlines) : base(inlines)
+    {
+        IsUnderline = true;
     }
 }

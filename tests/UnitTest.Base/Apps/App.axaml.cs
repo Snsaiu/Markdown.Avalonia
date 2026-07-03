@@ -1,90 +1,90 @@
-﻿using Avalonia;
-using Avalonia.Input;
-using Avalonia.Layout;
-using Avalonia.Platform;
-using Avalonia.Styling;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Rendering;
-using Avalonia.Threading;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-using System;
-using Avalonia.Controls.ApplicationLifetimes;
-using System.Collections.Generic;
-using System.Threading;
-using System.Diagnostics;
+namespace UnitTest.Base.Apps;
 
-namespace UnitTest.Base.Apps
+public class App : Application
 {
-    public class App : Application
+    internal static bool ApplicationStarted;
+
+    public override void Initialize()
     {
-        internal static bool ApplicationStarted = false;
+        AvaloniaXamlLoader.Load(this);
+    }
 
-        public override void Initialize()
+    public override void OnFrameworkInitializationCompleted()
+    {
+        Debug.Print("OnFrameworkInitializationCompleted Called");
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            AvaloniaXamlLoader.Load(this);
+            Debug.Print("Lifetime is ClassicDesktop");
+
+            var win = new Window();
+            win.Loaded += (s, e) => Loaded();
+
+            desktop.MainWindow = win;
+        }
+        else
+        {
+            Loaded();
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private void Loaded()
+    {
+        Debug.Print("MainWindowLoaded");
+        ApplicationStarted = true;
+    }
+
+    public static IDisposable Start()
+    {
+        var starter = new AppStarter();
+
+        var th = new Thread(starter.Start);
+        th.Start();
+
+        return starter;
+    }
+}
+
+internal class AppStarter : IDisposable
+{
+    private ClassicDesktopStyleApplicationLifetime lifetime;
+
+    public void Dispose()
+    {
+        try
         {
-            Debug.Print("OnFrameworkInitializationCompleted Called");
-
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                Debug.Print("Lifetime is ClassicDesktop");
-
-                var win = new Window();
-                win.Loaded += (s, e) => Loaded();
-
-                desktop.MainWindow = win;
-            }
-            else Loaded();
-
-            base.OnFrameworkInitializationCompleted();
+            lifetime.Shutdown();
         }
-
-        private void Loaded()
+        finally
         {
-            Debug.Print("MainWindowLoaded");
-            ApplicationStarted = true;
-        }
-
-        public static IDisposable Start()
-        {
-            var starter = new AppStarter();
-
-            var th = new Thread(starter.Start);
-            th.Start();
-
-            return starter;
+            lifetime.Dispose();
         }
     }
 
-    class AppStarter : IDisposable
+    public void Start()
     {
-        ClassicDesktopStyleApplicationLifetime lifetime;
+        var builder = AppBuilder.Configure<App>();
+        builder.UsePlatformDetect();
 
-        public void Start()
+        var ags = new string[0];
+
+        lifetime = new ClassicDesktopStyleApplicationLifetime
         {
-            var builder = AppBuilder.Configure<App>();
-            builder.UsePlatformDetect();
+            Args = ags,
+            ShutdownMode = ShutdownMode.OnMainWindowClose
+        };
+        builder.SetupWithLifetime(lifetime);
 
-            var ags = new string[0];
-
-            lifetime = new ClassicDesktopStyleApplicationLifetime()
-            {
-                Args = ags,
-                ShutdownMode = ShutdownMode.OnMainWindowClose
-            };
-            builder.SetupWithLifetime(lifetime);
-
-            lifetime.Start(ags);
-        }
-
-        public void Dispose()
-        {
-            try { lifetime.Shutdown(); }
-            finally { lifetime.Dispose(); }
-        }
+        lifetime.Start(ags);
     }
 }

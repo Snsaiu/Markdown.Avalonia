@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Markdown.Avalonia;
 
-namespace Markdown.Avalonia
+public enum CopyMode
 {
-    public enum CopyMode
-    {
-        None,
-        PlainText,
-    }
+    None,
+    PlainText
 }

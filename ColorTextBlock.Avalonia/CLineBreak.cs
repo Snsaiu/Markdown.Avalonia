@@ -1,34 +1,32 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using Avalonia.Media;
 using ColorTextBlock.Avalonia.Geometries;
-using System.Collections.Generic;
-using System.Globalization;
 
-namespace ColorTextBlock.Avalonia
+namespace ColorTextBlock.Avalonia;
+
+/// <summary>
+///     Expression of the linebreak.
+/// </summary>
+public class CLineBreak : CRun
 {
-    /// <summary>
-    /// Expression of the linebreak.
-    /// </summary>
-    public class CLineBreak : CRun
+    public CLineBreak()
     {
-        public CLineBreak()
-        {
-            Text = "\n";
-        }
+        Text = "\n";
+    }
 
-        protected override IEnumerable<CGeometry> MeasureOverride(
-            double entireWidth,
-            double remainWidth)
-        {
-            var ftxt = new FormattedText(
-                        "Ty",
-                        CultureInfo.CurrentCulture,
-                        FlowDirection.LeftToRight,
-                        new Typeface(FontFamily, FontStyle, FontWeight),
-                        FontSize,
-                        Foreground);
+    protected override IEnumerable<CGeometry> MeasureOverride(
+        double entireWidth,
+        double remainWidth)
+    {
+        var ftxt = new FormattedText(
+            "Ty",
+            CultureInfo.CurrentCulture,
+            FlowDirection.LeftToRight,
+            new Typeface(FontFamily, FontStyle, FontWeight),
+            FontSize,
+            Foreground);
 
-            yield return new LineBreakMarkGeometry(this, ftxt.Height);
-        }
+        yield return new LineBreakMarkGeometry(this, ftxt.Height);
     }
 }

@@ -1,20 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Markdown.Avalonia.props"/>
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
-    <PackageId>ColorTextBlock.Avalonia.YouYan</PackageId>
-    <Version>$(PackageVersion)</Version>
-    <Authors>YouYan</Authors>
-    <Copyright>Nanjing Youyan</Copyright>
-    <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia/tree/master/ColorTextBlock.Avalonia/</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <LangVersion>9</LangVersion>
-    <Nullable>enable</Nullable>
-    <PackageVersion>11.2-a4</PackageVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
-  </ItemGroup>
+    <Import Project="..\Markdown.Avalonia.props"/>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+        <PackageId>ColorTextBlock.Avalonia.YouYan</PackageId>
+        <Version>$(PackageVersion)</Version>
+        <Authors>YouYan</Authors>
+        <Copyright>Nanjing Youyan</Copyright>
+        <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia/tree/master/ColorTextBlock.Avalonia/</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <LangVersion>14</LangVersion>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
+    </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
-﻿namespace Markdown.Avalonia.StyleCollections
+﻿namespace Markdown.Avalonia.StyleCollections;
+
+internal interface INamedStyle
 {
-    internal interface INamedStyle
-    {
-        string Name { get; }
-        bool IsEditted { get; set; }
-    }
+    string Name { get; }
+    bool IsEditted { get; set; }
 }
